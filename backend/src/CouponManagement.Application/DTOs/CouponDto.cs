@@ -1,29 +1,21 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CouponManagement.Domain.Entities
+namespace CouponManagement.Application.DTOs
 {
-    public class Coupon
+    public class CouponDto
     {
         public int Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public DiscountType DiscountType { get; set; }
+        public string DiscountType { get; set; } = string.Empty;
         public decimal DiscountValue { get; set; }
         public int CreatedById { get; set; }
-        public virtual User CreatedBy { get; set; } = null!;
-        [Column(TypeName = "datetime")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public string CreatedByUsername { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public bool AllowMultipleDiscounts { get; set; }
         public int? MaxUsageCount { get; set; }
         public int CurrentUsageCount { get; set; }
         public bool IsActive { get; set; }
-    }
-
-    public enum DiscountType
-    {
-        Percentage,
-        FixedAmount
     }
 }
