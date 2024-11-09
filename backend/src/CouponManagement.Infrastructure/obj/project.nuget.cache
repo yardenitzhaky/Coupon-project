@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "dgSpecHash": "0VFOcKdBEZiwsot629AMLGcOrRakDwfJxyy3k03iF35SHARQU680mPykxHIJGSyZR/e8OgkN3x7hHAbnD4odFA==",
+  "success": true,
+  "projectFilePath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "/Users/yarden_itzhaky/.nuget/packages/automapper/13.0.1/automapper.13.0.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/fluentvalidation/11.10.0/fluentvalidation.11.10.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.10.0/fluentvalidation.dependencyinjectionextensions.11.10.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/mediatr/12.4.1/mediatr.12.4.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.bcl.timeprovider/8.0.1/microsoft.bcl.timeprovider.8.0.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.extensions.options/6.0.0/microsoft.extensions.options.6.0.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.extensions.primitives/6.0.0/microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.identitymodel.abstractions/8.2.0/microsoft.identitymodel.abstractions.8.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.2.0/microsoft.identitymodel.jsonwebtokens.8.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.identitymodel.logging/8.2.0/microsoft.identitymodel.logging.8.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/microsoft.identitymodel.tokens/8.2.0/microsoft.identitymodel.tokens.8.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/system.identitymodel.tokens.jwt/8.2.0/system.identitymodel.tokens.jwt.8.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

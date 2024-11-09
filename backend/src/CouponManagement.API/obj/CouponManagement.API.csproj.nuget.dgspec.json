@@ -1,0 +1,255 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/CouponManagement.API.csproj": {}
+  },
+  "projects": {
+    "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/CouponManagement.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/CouponManagement.API.csproj",
+        "projectName": "CouponManagement.API",
+        "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/CouponManagement.API.csproj",
+        "packagesPath": "/Users/yarden_itzhaky/.nuget/packages/",
+        "outputPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/yarden_itzhaky/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj": {
+                "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj"
+              },
+              "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj": {
+                "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.3, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.9.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.200/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj",
+        "projectName": "CouponManagement.Application",
+        "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj",
+        "packagesPath": "/Users/yarden_itzhaky/.nuget/packages/",
+        "outputPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/yarden_itzhaky/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj": {
+                "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.200/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj",
+        "projectName": "CouponManagement.Domain",
+        "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj",
+        "packagesPath": "/Users/yarden_itzhaky/.nuget/packages/",
+        "outputPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/yarden_itzhaky/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.200/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj",
+        "projectName": "CouponManagement.Infrastructure",
+        "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/CouponManagement.Infrastructure.csproj",
+        "packagesPath": "/Users/yarden_itzhaky/.nuget/packages/",
+        "outputPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/yarden_itzhaky/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj": {
+                "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj"
+              },
+              "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj": {
+                "projectPath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Domain/CouponManagement.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.200/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
