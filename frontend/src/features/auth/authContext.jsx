@@ -1,6 +1,6 @@
+// src/features/auth/authContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import Session from 'supertokens-auth-react/recipe/session';
-import { signOut } from 'supertokens-auth-react/recipe/emailpassword';
+import authService from '../../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -12,13 +12,10 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = () => {
     try {
-      const session = await Session.doesSessionExist();
-      if (session) {
-        const userData = await Session.getUserId();
-        setUser(userData);
-      }
+      const currentUser = authService.getCurrentUser();
+      setUser(currentUser);
     } catch (error) {
       console.error('Auth check failed:', error);
     } finally {
@@ -27,24 +24,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (username, password) => {
-    // Implement login logic
-    // For now, we'll simulate a successful login
-    setUser({ username });
-  };
-
-  const logout = async () => {
     try {
-      await signOut();
-      setUser(null);
+      const response = await authService.login(username, password);
+      setUser(response.user);
+      return response;
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Login failed:', error);
+      throw error;
     }
   };
 
-  const createUser = async (username, password) => {
-    // Implement user creation logic with your mock API
-    // This should only be accessible by admin users
-    console.log('Creating user:', username);
+  const logout = () => {
+    try {
+      authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still clear the user state even if the API call fails
+      setUser(null);
+    }
+  };
+
+  const createUser = async (userData) => {
+    try {
+      const response = await authService.createUser(userData);
+      return response;
+    } catch (error) {
+      console.error('User creation failed:', error);
+      throw error;
+    }
   };
 
   const value = {
@@ -53,6 +61,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     createUser,
+    isAuthenticated: authService.isAuthenticated(),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

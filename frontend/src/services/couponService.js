@@ -1,32 +1,68 @@
-import axios from 'axios';
+// src/services/couponService.js
+import { couponsApi } from './api';
 
-const API_URL = '/api/coupons';
-
-const couponService = {
-  getAllCoupons: async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
-  },
-
-  getCoupon: async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
-  },
-
-  createCoupon: async (couponData) => {
-    const response = await axios.post(API_URL, couponData);
-    return response.data;
-  },
-
-  updateCoupon: async (id, couponData) => {
-    const response = await axios.put(`${API_URL}/${id}`, couponData);
-    return response.data;
-  },
-
-  deleteCoupon: async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`);
-    return response.data;
+class CouponService {
+  async getAllCoupons() {
+    try {
+      const coupons = await couponsApi.getAll();
+      return coupons;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch coupons');
+    }
   }
-};
 
-export default couponService;
+  async getCouponById(id) {
+    try {
+      const coupon = await couponsApi.getById(id);
+      return coupon;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch coupon');
+    }
+  }
+
+  async createCoupon(couponData) {
+    try {
+      const createdCoupon = await couponsApi.create(couponData);
+      return createdCoupon;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to create coupon');
+    }
+  }
+
+  async updateCoupon(id, couponData) {
+    try {
+      const updatedCoupon = await couponsApi.update(id, couponData);
+      return updatedCoupon;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update coupon');
+    }
+  }
+
+  async deleteCoupon(id) {
+    try {
+      await couponsApi.delete(id);
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to delete coupon');
+    }
+  }
+
+  async validateCoupon(code, orderAmount) {
+    try {
+      const validationResult = await couponsApi.validate(code, orderAmount);
+      return validationResult;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to validate coupon');
+    }
+  }
+
+  async validateMultipleCoupons(coupons, orderAmount) {
+    try {
+      const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
+      return validationResult;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to validate coupons');
+    }
+  }
+}
+
+export default new CouponService();

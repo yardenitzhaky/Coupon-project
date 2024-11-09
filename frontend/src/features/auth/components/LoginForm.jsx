@@ -3,16 +3,24 @@ import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../authContext';
 import { classNames } from 'primereact/utils';
+import { Messages } from 'primereact/messages';
+import { useRef } from 'react';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const messages = useRef(null);
+
+  // Get the return URL from location state or default to dashboard
+  const from = location.state?.from?.pathname || '/admin/dashboard';
 
   const validate = () => {
     const newErrors = {};
@@ -24,13 +32,22 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      try {
-        await login(username, password);
-        navigate('/admin/dashboard');
-      } catch (error) {
-        setErrors({ submit: error.message });
-      }
+    if (!validate()) return;
+
+    setLoading(true);
+    try {
+      await login(username, password);
+      navigate(from, { replace: true });
+    } catch (error) {
+      messages.current?.show({
+        severity: 'error',
+        summary: 'Login Failed',
+        detail: error.message,
+        sticky: true
+      });
+      setErrors({ submit: error.message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,6 +55,7 @@ const LoginForm = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md p-4">
         <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+        <Messages ref={messages} />
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="username">Username</label>
@@ -46,6 +64,7 @@ const LoginForm = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className={classNames({ 'p-invalid': errors.username })}
+              disabled={loading}
             />
             {errors.username && <small className="text-red-500">{errors.username}</small>}
           </div>
@@ -59,6 +78,7 @@ const LoginForm = () => {
               feedback={false}
               toggleMask
               className={classNames({ 'p-invalid': errors.password })}
+              disabled={loading}
             />
             {errors.password && <small className="text-red-500">{errors.password}</small>}
           </div>
@@ -71,6 +91,8 @@ const LoginForm = () => {
             type="submit"
             label="Login"
             className="w-full"
+            loading={loading}
+            disabled={loading}
           />
         </form>
       </Card>
