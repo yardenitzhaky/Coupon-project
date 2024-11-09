@@ -1,15 +1,20 @@
 import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { useAuth } from '../../features/auth/authContext';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  const isActiveRoute = (path) => {
+    return location.pathname.startsWith(path);
   };
 
   return (
@@ -42,25 +47,33 @@ const AdminLayout = () => {
             <Button
               icon="pi pi-home"
               label="Dashboard"
-              className="p-button-text w-full justify-start mb-2"
+              className={`p-button-text w-full justify-start mb-2 ${
+                isActiveRoute('/admin/dashboard') ? 'bg-blue-50 text-blue-700' : ''
+              }`}
               onClick={() => navigate('/admin/dashboard')}
             />
             <Button
               icon="pi pi-ticket"
               label="Coupons"
-              className="p-button-text w-full justify-start mb-2"
+              className={`p-button-text w-full justify-start mb-2 ${
+                isActiveRoute('/admin/coupons') ? 'bg-blue-50 text-blue-700' : ''
+              }`}
               onClick={() => navigate('/admin/coupons')}
             />
             <Button
               icon="pi pi-chart-bar"
               label="Reports"
-              className="p-button-text w-full justify-start mb-2"
+              className={`p-button-text w-full justify-start mb-2 ${
+                isActiveRoute('/admin/reports') ? 'bg-blue-50 text-blue-700' : ''
+              }`}
               onClick={() => navigate('/admin/reports')}
             />
             <Button
               icon="pi pi-users"
               label="Create User"
-              className="p-button-text w-full justify-start"
+              className={`p-button-text w-full justify-start ${
+                isActiveRoute('/admin/create-user') ? 'bg-blue-50 text-blue-700' : ''
+              }`}
               onClick={() => navigate('/admin/create-user')}
             />
           </nav>
