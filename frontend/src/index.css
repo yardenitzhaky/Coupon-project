@@ -23,3 +23,22 @@
     @apply bg-blue-50 text-blue-700;
   }
 }
+
+.custom-checkbox .p-checkbox-box {
+  border: 2px solid #007ad9; /* Change border color */
+  width: 20px; /* Increase size for better visibility */
+  height: 20px; /* Increase size for better visibility */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-checkbox .p-checkbox-box.p-highlight {
+  border-color: #005bb5; /* Change border color when checked */
+}
+
+.custom-checkbox .p-checkbox-icon {
+  font-size: 1.2em; /* Increase checkmark size */
+  color: white; /* Change checkmark color */
+}
+

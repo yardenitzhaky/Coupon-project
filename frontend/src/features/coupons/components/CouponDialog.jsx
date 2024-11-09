@@ -183,6 +183,7 @@ const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
             name="allowMultipleDiscounts"
             checked={formData.allowMultipleDiscounts}
             onChange={handleChange}
+            className="custom-checkbox"
           />
           <label htmlFor="allowMultipleDiscounts" className="ml-2">Allow Multiple Discounts</label>
         </div>
@@ -193,6 +194,8 @@ const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
             name="isActive"
             checked={formData.isActive}
             onChange={handleChange}
+            className="custom-checkbox"
+
           />
           <label htmlFor="isActive" className="ml-2">Active</label>
         </div>
