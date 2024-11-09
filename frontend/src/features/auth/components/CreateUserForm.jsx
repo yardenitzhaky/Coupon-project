@@ -78,6 +78,7 @@ const CreateUserForm = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
+            feedback={false}
             className={classNames({ 'p-invalid': errors.confirmPassword })}
           />
           {errors.confirmPassword && (
