@@ -6,6 +6,7 @@ import AdminLayout from './layouts/AdminLayout/AdminLayout';
 import LoginForm from './features/auth/components/LoginForm';
 import CreateUserForm from './features/auth/components/CreateUserForm';
 import CouponList from './features/coupons/components/CouponList';
+import Reports from './features/reports/components/Reports'; 
 import { PrimeReactProvider } from 'primereact/api';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 
@@ -31,7 +32,7 @@ const App = () => {
               <Route path="dashboard" element={<div>Dashboard Content</div>} />
               <Route path="create-user" element={<CreateUserForm />} />
               <Route path="coupons" element={<CouponList />} />
-              <Route path="reports" element={<div>Reports</div>} />
+              <Route path="reports" element={<Reports />} />
             </Route>
 
             {/* Redirect root to login */}

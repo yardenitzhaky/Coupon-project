@@ -6,6 +6,7 @@ using CouponManagement.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CouponManagement.Application.Common.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,8 +62,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Add AutoMapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+// Update the AutoMapper registration:
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Add API documentation
 builder.Services.AddEndpointsApiExplorer();
@@ -71,6 +74,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 var app = builder.Build();
 
 app.UseRouting();
@@ -78,8 +83,8 @@ app.UseRouting();
 app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
