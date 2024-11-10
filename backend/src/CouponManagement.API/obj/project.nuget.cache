@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "W7lH8prWqt4IThEJqwCeS4aS18P1GkbYSwvPOXjreTdDt/BkauaxrWzuxwBVvpZuQ87U/tVVKJYW81WbJNJS0g==",
+  "dgSpecHash": "3wSNO6WFZ2Smu1E4OHA2TPAQ6ReRhymuy2/Rtu80OdP2TF7jahjRQS3jloOi3MfOCURfAbNu/km6kEHe/mZ1zg==",
   "success": true,
   "projectFilePath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.API/CouponManagement.API.csproj",
   "expectedPackageFiles": [

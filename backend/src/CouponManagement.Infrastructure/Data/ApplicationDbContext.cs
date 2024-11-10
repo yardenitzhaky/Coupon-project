@@ -25,7 +25,6 @@ namespace CouponManagement.Infrastructure.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Password).IsRequired();
-                entity.Property(e => e.Role).IsRequired();
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.HasIndex(e => e.Username).IsUnique();
             });
