@@ -4,9 +4,11 @@ import { AuthProvider } from './features/auth/authContext';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 import AdminLayout from './layouts/AdminLayout/AdminLayout';
 import LoginForm from './features/auth/components/LoginForm';
+import CombinedLoginPage from './features/auth/components/CombinedLoginPage';
 import CreateUserForm from './features/auth/components/CreateUserForm';
 import CouponList from './features/coupons/components/CouponList';
-import Reports from './features/reports/components/Reports'; 
+import Reports from './features/reports/components/Reports';
+import CouponValidator from './features/coupons/components/CouponValidator';
 import { PrimeReactProvider } from 'primereact/api';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 
@@ -18,7 +20,7 @@ const App = () => {
           <ConfirmDialog />
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<LoginForm />} />
+            <Route path="/login" element={<CombinedLoginPage />} />
             
             {/* Protected Admin Routes */}
             <Route

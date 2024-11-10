@@ -6,5 +6,7 @@ namespace CouponManagement.Application.DTOs
         public string? Message { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? FinalAmount { get; set; }
+        public string? DiscountType { get; set; }
+        public decimal? DiscountValue { get; set; }
     }
 }
