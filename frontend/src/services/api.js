@@ -90,24 +90,65 @@ export const couponsApi = {
 // Reports API endpoints
 export const reportsApi = {
   getCouponsByUser: async (userId) => {
-    const response = await api.get(`/reports/coupons/by-user/${userId}`);
-    return response.data;
+    try {
+      const response = await api.get(`/reports/coupons/by-user/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching coupons by user:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch coupons by user');
+    }
   },
 
   getCouponsByDateRange: async (startDate, endDate) => {
-    const response = await api.get('/reports/coupons/by-date', {
-      params: { startDate, endDate },
-    });
-    return response.data;
+    try {
+      // Format dates to ISO string for API
+      const formattedStartDate = startDate instanceof Date ? startDate.toISOString() : startDate;
+      const formattedEndDate = endDate instanceof Date ? endDate.toISOString() : endDate;
+      
+      const response = await api.get('/reports/coupons/by-date', {
+        params: { 
+          startDate: formattedStartDate, 
+          endDate: formattedEndDate 
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching coupons by date range:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch coupons by date range');
+    }
   },
 
   exportCoupons: async (filters) => {
-    const response = await api.get('/reports/coupons/export', {
-      params: filters,
-      responseType: 'blob',
-    });
-    return response.data;
+    try {
+      // Format dates if they exist in filters
+      const formattedFilters = {
+        ...filters,
+        startDate: filters.startDate instanceof Date ? filters.startDate.toISOString() : filters.startDate,
+        endDate: filters.endDate instanceof Date ? filters.endDate.toISOString() : filters.endDate,
+      };
+
+      const response = await api.get('/reports/coupons/export', {
+        params: formattedFilters,
+        responseType: 'blob', // Important for file download
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error exporting coupons:', error);
+      throw new Error(error.response?.data?.message || 'Failed to export coupons');
+    }
   },
+
+  // Get available users for report filtering
+  getUsers: async () => {
+    try {
+      const response = await api.get('/reports/users');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch users');
+    }
+  }
 };
 
 // User validation endpoint for coupon application
