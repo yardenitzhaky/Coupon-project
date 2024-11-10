@@ -66,43 +66,6 @@ const LoginPage = () => {
     visible: { opacity: 1, x: 0 }
   };
 
-  // Header Component
-  const Header = () => (
-    <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center space-x-2"
-        >
-          <ShieldCheck className="w-8 h-8" />
-          <span className="text-2xl font-bold">CouponGuard</span>
-        </motion.div>
-      </div>
-    </div>
-  );
-
-  // Footer Component
-  const Footer = () => (
-    <div className="bg-gray-800 text-white p-4">
-      <div className="container mx-auto text-center">
-        <p className="text-sm">© 2024 CouponGuard. All rights reserved.</p>
-        <div className="flex justify-center space-x-4 mt-2">
-          <motion.a 
-            whileHover={{ scale: 1.1 }}
-            className="text-gray-400 hover:text-blue-400 cursor-pointer"
-          >
-            Privacy Policy
-          </motion.a>
-          <motion.a 
-            whileHover={{ scale: 1.1 }}
-            className="text-gray-400 hover:text-blue-400 cursor-pointer"
-          >
-            Terms of Service
-          </motion.a>
-        </div>
-      </div>
-    </div>
-  );
 
   // Validation functions
   const validateAuth = () => {
@@ -186,9 +149,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {couponLoading && <LoadingSpinner />}
-      <Header />
-  
+      {couponLoading && <LoadingSpinner />}  
       <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
         <Card className="w-full max-w-4xl shadow-2xl">
           <TabView className="border-none">
@@ -363,8 +324,6 @@ const LoginPage = () => {
     </motion.div>
   )}
 </Dialog>
-
-<Footer />
 </div>
 );
 };

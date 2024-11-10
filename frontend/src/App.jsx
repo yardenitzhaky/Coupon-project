@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './features/auth/authContext';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
-import AdminLayout from './layouts/AdminLayout/AdminLayout';
+import {AdminLayout} from './layouts/AdminLayout';
+import {MainLayout} from './layouts/MainLayout';
 import EnhancedLoginPage from './features/auth/components/CombinedLoginPage';
 import CreateUserForm from './features/auth/components/CreateUserForm';
 import CouponList from './features/coupons/components/CouponList';
@@ -11,6 +12,8 @@ import Reports from './features/reports/components/Reports';
 import { PrimeReactProvider } from 'primereact/api';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import PageTransition from './features/design/PageTransition';
+import { Outlet } from 'react-router-dom';
+
 
 // AnimatedRoutes component to handle route transitions
 const AnimatedRoutes = () => {
@@ -19,24 +22,28 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
-        <Route 
-          path="/login" 
-          element={
-            <PageTransition>
-              <EnhancedLoginPage />
-            </PageTransition>
-          } 
-        />
-        
-        {/* Protected Admin Routes */}
+        {/* Public Routes with MainLayout */}
+        <Route element={<MainLayout />}>
+          <Route
+            path="/login"
+            element={
+              <PageTransition>
+                <EnhancedLoginPage />
+              </PageTransition>
+            }
+          />
+        </Route>
+
+        {/* Protected Admin Routes with AdminLayout */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute>
-              <PageTransition>
-                <AdminLayout />
-              </PageTransition>
+              <AdminLayout>
+                <PageTransition>
+                  <Outlet />
+                </PageTransition>
+              </AdminLayout>
             </ProtectedRoute>
           }
         >
@@ -65,5 +72,6 @@ const App = () => {
     </PrimeReactProvider>
   );
 };
+
 
 export default App;
