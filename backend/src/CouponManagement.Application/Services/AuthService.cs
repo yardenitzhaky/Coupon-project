@@ -26,69 +26,22 @@ namespace CouponManagement.Application.Services
             _logger = logger;
         }
 
-public async Task<AuthResponse> Login(string username, string password)
-{
-    var user = await _userRepository.GetByUsernameAsync(username);
-    if (user == null)
-    {
-        throw new Exception("Invalid username or password");
-    }
-
-    _logger.LogInformation($"Found user with ID: {user.Id}");
-    _logger.LogInformation($"Stored hash: {user.Password}");
-    _logger.LogInformation($"Attempting verification for password: {password}");
-
-    try
-    {
-        bool verified = BCrypt.Net.BCrypt.Verify(password, user.Password);
-        _logger.LogInformation($"Password verification result: {verified}");
-
-        if (!verified)
+        public async Task<AuthResponse> Login(string username, string password)
         {
-            throw new Exception("Invalid username or password");
-        }
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError($"BCrypt verification error: {ex.Message}");
-        _logger.LogError($"Exception type: {ex.GetType().Name}");
-        _logger.LogError($"Stack trace: {ex.StackTrace}");
-        throw new Exception("Invalid username or password");
-    }
-
-    var token = GenerateJwtToken(user);
-
-    return new AuthResponse
-    {
-        Token = token,
-        Username = user.Username,
-        Role = user.Role.ToString()
-    };
-}
-
-
-        public async Task<AuthResponse> Register(RegisterRequest request)
-        {
-            if (await _userRepository.UsernameExistsAsync(request.Username))
+            var user = await _userRepository.GetByUsernameAsync(username);
+            if (user == null)
             {
-                throw new Exception("Username already exists");
+                throw new Exception("Invalid username or password");
             }
 
-            // Use default BCrypt settings with workFactor 12
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password, 12);
-            
-            _logger.LogInformation($"Generated hash for new user: {hashedPassword}");
+            _logger.LogInformation($"Found user with ID: {user.Id}");
+            _logger.LogInformation($"Stored hash: {user.Password}");
+            _logger.LogInformation($"Attempting verification for password: {password}");
 
-            var user = new User
+            if (!VerifyPassword(password, user.Password))
             {
-                Username = request.Username,
-                Password = hashedPassword,
-                Role = Enum.Parse<UserRole>(request.Role),
-                CreatedAt = DateTime.UtcNow,
-                IsActive = true
-            };
-
-            await _userRepository.CreateAsync(user);
+                throw new Exception("Invalid username or password");
+            }
 
             var token = GenerateJwtToken(user);
 
@@ -96,33 +49,138 @@ public async Task<AuthResponse> Login(string username, string password)
             {
                 Token = token,
                 Username = user.Username,
-                Role = user.Role.ToString()
             };
         }
 
-        public string GenerateJwtToken(User user)
+        public async Task<AuthResponse> Register(RegisterRequest request)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(
-                _configuration["Jwt:SecretKey"] ?? 
-                throw new Exception("JWT Secret key not configured"));
-            
-            var tokenDescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role.ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256)
-            };
+                _logger.LogInformation($"Starting registration process for username: {request.Username}");
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+                await ValidateRegistrationRequest(request);
+
+                // Check if username exists
+                if (await _userRepository.UsernameExistsAsync(request.Username))
+                {
+                    _logger.LogWarning($"Registration failed: Username already exists: {request.Username}");
+                    throw new Exception("Username already exists");
+                }
+
+                // Hash password
+                var hashedPassword = HashPassword(request.Password);
+                _logger.LogInformation($"Password hashed successfully for user: {request.Username}");
+
+                // Create user entity
+                var user = new User
+                {
+                    Username = request.Username,
+                    Password = hashedPassword,
+                    CreatedAt = DateTime.UtcNow,
+                    LastLogin = null,
+                    IsActive = true
+                };
+
+                // Save to database
+                await _userRepository.CreateAsync(user);
+                _logger.LogInformation($"User created successfully: {user.Username}");
+
+                // Generate token
+                var token = GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    Token = token,
+                    Username = user.Username,
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Registration error for username {request.Username}: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task ValidateRegistrationRequest(RegisterRequest request)
+        {
+            // Validate request
+            if (string.IsNullOrWhiteSpace(request.Username) ||
+                string.IsNullOrWhiteSpace(request.Password))
+            {
+                throw new Exception("All fields are required");
+            }
+
+            // Check username length
+            if (request.Username.Length < 3 || request.Username.Length > 50)
+            {
+                throw new Exception("Username must be between 3 and 50 characters");
+            }
+
+            // Check password length
+            if (request.Password.Length < 8 || request.Password.Length > 100)
+            {
+                throw new Exception("Password must be between 8 and 100 characters");
+            }
+
+            // Verify password confirmation
+            if (request.Password != request.ConfirmPassword)
+            {
+                throw new Exception("Passwords do not match");
+            }
+        }
+
+        private bool VerifyPassword(string password, string hashedPassword)
+        {
+            try
+            {
+                bool verified = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+                _logger.LogInformation($"Password verification result: {verified}");
+                return verified;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BCrypt verification error: {ex.Message}");
+                _logger.LogError($"Exception type: {ex.GetType().Name}");
+                _logger.LogError($"Stack trace: {ex.StackTrace}");
+                throw new Exception("Invalid username or password");
+            }
+        }
+
+        private string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password, 12);
+        }
+
+        private string GenerateJwtToken(User user)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(
+                    _configuration["Jwt:SecretKey"] ??
+                    throw new Exception("JWT Secret key not configured"));
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key),
+                        SecurityAlgorithms.HmacSha256)
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Token generation error for user {user.Username}: {ex.Message}");
+                throw new Exception("Error generating authentication token");
+            }
         }
     }
 }

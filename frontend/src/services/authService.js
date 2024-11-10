@@ -39,7 +39,6 @@ class AuthService {
             localStorage.setItem('token', data.token);
             const user = {
                 username: data.username,
-                role: data.role,
             };
             localStorage.setItem('user', JSON.stringify(user));
             return { user, token: data.token };
@@ -82,7 +81,9 @@ class AuthService {
 
   async createUser(userData) {
     try {
+      console.log('Attempting to create user with data:', userData);
       const token = localStorage.getItem('token');
+      
       const response = await fetch(`${API_URL}/Auth/register`, {
         method: 'POST',
         headers: {
@@ -90,17 +91,40 @@ class AuthService {
           'Accept': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify({
+          username: userData.username,
+          password: userData.password,
+          confirmPassword: userData.confirmPassword,
+        })
+      });
+
+      const contentType = response.headers.get("content-type");
+      const responseText = await response.text();
+      const isJson = contentType && contentType.includes("application/json");
+      const responseData = isJson ? JSON.parse(responseText) : responseText;
+
+      console.log('Server response:', {
+        status: response.status,
+        isJson,
+        data: responseData
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create user');
+        // Log the error response for debugging
+        console.error('Server error response:', responseData);
+
+        // Throw error with details
+        throw {
+          message: responseData.message || 'Failed to create user',
+          response: {
+            data: responseData
+          }
+        };
       }
 
-      return await response.json();
+      return responseData;
     } catch (error) {
-      console.error('Create user error:', error);
+      console.error('Create user error details:', error);
       throw error;
     }
   }

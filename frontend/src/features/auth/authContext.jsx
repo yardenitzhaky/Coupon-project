@@ -47,7 +47,12 @@ export const AuthProvider = ({ children }) => {
 
   const createUser = async (userData) => {
     try {
-      const response = await authService.createUser(userData);
+      console.log('Creating user with data:', userData);
+      const response = await authService.createUser({
+        username: userData.username,
+        password: userData.password,
+        confirmPassword: userData.confirmPassword,
+      });
       return response;
     } catch (error) {
       console.error('User creation failed:', error);
@@ -61,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     createUser,
-    isAuthenticated: authService.isAuthenticated(),
+    isAuthenticated: Boolean(user),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

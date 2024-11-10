@@ -10,8 +10,8 @@ namespace CouponManagement.Application.Common.Mappings
         public MappingProfile()
         {
             // User mapping
-            CreateMap<User, UserDto>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+            CreateMap<User, UserDto>();
+                
 
             // Coupon mapping
             CreateMap<Coupon, CouponDto>()

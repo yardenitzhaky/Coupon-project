@@ -49,7 +49,7 @@ export const authApi = {
   },
 
   createUser: async (userData) => {
-    const response = await api.post('/auth/users', userData);
+    const response = await api.post('/auth/register', userData);
     return response.data;
   },
 };
