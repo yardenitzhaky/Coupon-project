@@ -1,12 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "ECNn7RkaCrEAcahQgNvq6qZXuUE4Q69ZJmkcjTP66QJVbeGhvyE/Ef/DVoiYowhYypjxXMfcDaU8RNg+A95PfA==",
+  "dgSpecHash": "rupzbgdCzu7Acoqv2IC0MFwxPsxSlvmEzc0N4oBxOC+CIDaA7SeHZTLB79x2uEfYM4PmvuZF/17nzh1Ip57xSw==",
   "success": true,
   "projectFilePath": "/Users/yarden_itzhaky/Desktop/Projects/Coupon-project/backend/src/CouponManagement.Application/CouponManagement.Application.csproj",
   "expectedPackageFiles": [
     "/Users/yarden_itzhaky/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/closedxml/0.104.1/closedxml.0.104.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/closedxml.parser/1.2.0/closedxml.parser.1.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/documentformat.openxml/3.0.1/documentformat.openxml.3.0.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/documentformat.openxml.framework/3.0.1/documentformat.openxml.framework.3.0.1.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/excelnumberformat/1.1.0/excelnumberformat.1.1.0.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/fluentvalidation/11.8.1/fluentvalidation.11.8.1.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.8.1/fluentvalidation.dependencyinjectionextensions.11.8.1.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/mediatr/11.1.0/mediatr.11.1.0.nupkg.sha512",
@@ -35,7 +40,10 @@
     "/Users/yarden_itzhaky/.nuget/packages/microsoft.identitymodel.tokens/7.0.3/microsoft.identitymodel.tokens.7.0.3.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/mysqlconnector/2.2.5/mysqlconnector.2.2.5.nupkg.sha512",
     "/Users/yarden_itzhaky/.nuget/packages/pomelo.entityframeworkcore.mysql/7.0.0/pomelo.entityframeworkcore.mysql.7.0.0.nupkg.sha512",
-    "/Users/yarden_itzhaky/.nuget/packages/system.identitymodel.tokens.jwt/7.0.3/system.identitymodel.tokens.jwt.7.0.3.nupkg.sha512"
+    "/Users/yarden_itzhaky/.nuget/packages/rbush/3.2.0/rbush.3.2.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/sixlabors.fonts/1.0.0/sixlabors.fonts.1.0.0.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/system.identitymodel.tokens.jwt/7.0.3/system.identitymodel.tokens.jwt.7.0.3.nupkg.sha512",
+    "/Users/yarden_itzhaky/.nuget/packages/system.io.packaging/8.0.0/system.io.packaging.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }
