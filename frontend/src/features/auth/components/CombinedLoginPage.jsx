@@ -46,25 +46,26 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
+  // const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.1
-      }
-    }
-  };
+  // // Animation variants
+  // const containerVariants = {
+  //   hidden: { opacity: 0, y: 20 },
+  //   visible: { 
+  //     opacity: 1, 
+  //     y: 0,
+  //     transition: {
+  //       duration: 0.5,
+  //       staggerChildren: 0.1
+  //     }
+  //   }
+  // };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: { opacity: 1, x: 0 }
   };
+
 
 
   // Validation functions

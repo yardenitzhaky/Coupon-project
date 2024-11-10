@@ -13,6 +13,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import PageTransition from './features/design/PageTransition';
 import { Outlet } from 'react-router-dom';
+import CombinedLoginPage from './features/auth/components/CombinedLoginPage';
 
 
 // AnimatedRoutes component to handle route transitions
@@ -28,7 +29,7 @@ const AnimatedRoutes = () => {
             path="/login"
             element={
               <PageTransition>
-                <EnhancedLoginPage />
+                <CombinedLoginPage />
               </PageTransition>
             }
           />
