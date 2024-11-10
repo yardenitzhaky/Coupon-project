@@ -1,42 +1,110 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Messages } from 'primereact/messages';
+import { TabView, TabPanel } from 'primereact/tabview';
 import { Divider } from 'primereact/divider';
 import { classNames } from 'primereact/utils';
+import { Ripple } from 'primereact/ripple';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../authContext';
-import { TabView, TabPanel } from 'primereact/tabview';
+import LoadingSpinner from '../../design/LoadingSpinner';
 
-const CombinedLoginPage = () => {
-  // Auth related states
+// Import Lucide icons
+import { 
+  ShieldCheck, 
+  Tag, 
+  Lock,
+  User,
+  Mail,
+  DollarSign,
+  Package,
+  CreditCard
+} from 'lucide-react';
+
+const LoginPage = () => {
+  
+  // States for authentication
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [authErrors, setAuthErrors] = useState({});
   const [authLoading, setAuthLoading] = useState(false);
   
-  // Coupon related states
+  // States for coupon validation
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
   
-  // Shared states and hooks
+  // Refs and hooks
   const messages = useRef(null);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Constants
-  const ORIGINAL_AMOUNT = 100; // ₪100 fixed amount as specified
+  const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
 
-  // Get the return URL from location state or default to dashboard
-  const from = location.state?.from?.pathname || '/admin/dashboard';
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-  // Validate login form
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 }
+  };
+
+  // Header Component
+  const Header = () => (
+    <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
+      <div className="container mx-auto flex justify-between items-center">
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center space-x-2"
+        >
+          <ShieldCheck className="w-8 h-8" />
+          <span className="text-2xl font-bold">CouponGuard</span>
+        </motion.div>
+      </div>
+    </div>
+  );
+
+  // Footer Component
+  const Footer = () => (
+    <div className="bg-gray-800 text-white p-4">
+      <div className="container mx-auto text-center">
+        <p className="text-sm">© 2024 CouponGuard. All rights reserved.</p>
+        <div className="flex justify-center space-x-4 mt-2">
+          <motion.a 
+            whileHover={{ scale: 1.1 }}
+            className="text-gray-400 hover:text-blue-400 cursor-pointer"
+          >
+            Privacy Policy
+          </motion.a>
+          <motion.a 
+            whileHover={{ scale: 1.1 }}
+            className="text-gray-400 hover:text-blue-400 cursor-pointer"
+          >
+            Terms of Service
+          </motion.a>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Validation functions
   const validateAuth = () => {
     const newErrors = {};
     if (!username) newErrors.username = 'Username is required';
@@ -45,7 +113,7 @@ const CombinedLoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle login form submission
+  // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateAuth()) return;
@@ -53,7 +121,7 @@ const CombinedLoginPage = () => {
     setAuthLoading(true);
     try {
       await login(username, password);
-      navigate(from, { replace: true });
+      navigate(location.state?.from?.pathname || '/admin/dashboard');
     } catch (error) {
       messages.current?.show({
         severity: 'error',
@@ -61,7 +129,6 @@ const CombinedLoginPage = () => {
         detail: error.message,
         sticky: true
       });
-      setAuthErrors({ submit: error.message });
     } finally {
       setAuthLoading(false);
     }
@@ -81,11 +148,9 @@ const CombinedLoginPage = () => {
 
     setCouponLoading(true);
     try {
-      const response = await fetch('http://localhost:5190/api/coupons/validate', {
+      const response = await fetch('/api/coupons/validate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: couponCode,
           orderAmount: ORIGINAL_AMOUNT
@@ -93,24 +158,17 @@ const CombinedLoginPage = () => {
       });
 
       const result = await response.json();
-      
       if (response.ok) {
         setValidationResult(result);
         setShowResult(true);
       } else {
-        messages.current?.show({
-          severity: 'error',
-          summary: 'Error',
-          detail: result.message || 'Failed to validate coupon',
-          life: 3000
-        });
+        throw new Error(result.message);
       }
     } catch (error) {
-      console.error('Coupon validation error:', error);
       messages.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to validate coupon',
+        detail: error.message || 'Failed to validate coupon',
         life: 3000
       });
     } finally {
@@ -118,145 +176,197 @@ const CombinedLoginPage = () => {
     }
   };
 
+  // Currency formatter
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('he-IL', {
       style: 'currency',
-      currency: 'ILS',
-      minimumFractionDigits: 2
+      currency: 'ILS'
     }).format(amount);
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-4xl p-0">
-        <TabView>
-          {/* Customer Coupon Tab */}
-          <TabPanel header="Check Coupon" leftIcon="pi pi-tag mr-2">
-            <div className="p-4">
-              <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Order Total: {formatCurrency(ORIGINAL_AMOUNT)}
-                </h2>
-                <p className="text-sm text-gray-600 mt-2">
-                  Enter your coupon code to get a discount
-                </p>
-              </div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {couponLoading && <LoadingSpinner />}
+      <Header />
+  
+      <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+        <Card className="w-full max-w-4xl shadow-2xl">
+          <TabView className="border-none">
+            {/* Coupon Validation Tab */}
+            <TabPanel 
+              header={
+                <div className="flex items-center gap-2">
+                  <Tag size={18} />
+                  <span>Check Coupon</span>
+                </div>
+              }
+            >
+              <motion.div
+                variants={itemVariants}
+                className="p-6 space-y-6"
+              >
+                <div className="text-center">
+                  <Package className="w-16 h-16 mx-auto text-blue-500" />
+                  <h2 className="text-2xl font-bold mt-4">
+                    Order Total: {formatCurrency(ORIGINAL_AMOUNT)}
+                  </h2>
+                  <p className="text-gray-600 mt-2">
+                    Enter your coupon code to get a discount
+                  </p>
+                </div>
+  
+                <Messages ref={messages} />
 
-              <Messages ref={messages} />
-
-              <div className="flex flex-col gap-4">
-                <div className="p-inputgroup">
-                  <InputText
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Enter coupon code"
-                    className="p-inputtext-lg"
+                <div className="space-y-4 max-w-md mx-auto">
+                  <div className="p-inputgroup">
+                    <span className="p-inputgroup-addon">
+                      <Tag className="w-4 h-4 text-gray-500" />
+                    </span>
+                    <InputText
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter coupon code"
+                  className="w-full"
                   />
+                </div>
+
                   <Button
                     label="Apply"
+                    icon="pi pi-check"
                     loading={couponLoading}
                     onClick={validateCoupon}
-                    className="w-32"
                   />
                 </div>
-              </div>
-            </div>
-          </TabPanel>
-
-          {/* Admin Login Tab */}
-          <TabPanel header="Admin Login" leftIcon="pi pi-user mr-2">
-            <div className="p-4">
-              <h2 className="text-2xl font-bold mb-4 text-center">Admin Login</h2>
-              <Messages ref={messages} />
-              
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="username">Username</label>
-                  <InputText
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className={classNames({ 'p-invalid': authErrors.username })}
-                    disabled={authLoading}
-                  />
-                  {authErrors.username && (
-                    <small className="text-red-500">{authErrors.username}</small>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="password">Password</label>
-                  <Password
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    feedback={false}
-                    toggleMask
-                    className={classNames({ 'p-invalid': authErrors.password })}
-                    disabled={authLoading}
-                  />
-                  {authErrors.password && (
-                    <small className="text-red-500">{authErrors.password}</small>
-                  )}
-                </div>
-
-                {authErrors.submit && (
-                  <div className="text-red-500 text-center">{authErrors.submit}</div>
-                )}
-
-                <Button
-                  type="submit"
-                  label="Login"
-                  className="w-full"
-                  loading={authLoading}
-                  disabled={authLoading}
-                />
-              </form>
-            </div>
-          </TabPanel>
-        </TabView>
-
-        {/* Coupon Validation Result Dialog */}
-        <Dialog
-          visible={showResult}
-          onHide={() => setShowResult(false)}
-          header="Coupon Validation Result"
-          style={{ width: '90%', maxWidth: '500px' }}
-        >
-          {validationResult && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                <span className="font-semibold">Original Amount:</span>
-                <span>{formatCurrency(ORIGINAL_AMOUNT)}</span>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-                <span className="font-semibold">Discount Amount:</span>
-                <span className="text-green-600">
-                  -{formatCurrency(validationResult.discountAmount)}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-                <span className="font-semibold">Final Amount:</span>
-                <span className="text-blue-600 text-xl">
-                  {formatCurrency(validationResult.finalAmount)}
-                </span>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <Button
-                  label="Close"
-                  icon="pi pi-times"
-                  onClick={() => setShowResult(false)}
-                />
-              </div>
-            </div>
-          )}
-        </Dialog>
-      </Card>
+              </motion.div>
+            </TabPanel>
+  {/* Admin Login Tab */}
+<TabPanel
+  header={
+    <div className="flex items-center gap-2">
+      <Lock size={18} />
+      <span>Admin Login</span>
     </div>
-  );
+  }
+>
+  <motion.div
+    variants={itemVariants}
+    className="p-6"
+  >
+    <div className="text-center mb-6">
+      <ShieldCheck className="w-16 h-16 mx-auto text-blue-500" />
+      <h2 className="text-2xl font-bold mt-4">Welcome Back</h2>
+      <p className="text-gray-600">Sign in to access your dashboard</p>
+    </div>
+
+    <Messages ref={messages} />
+
+    <form onSubmit={handleLogin} className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-gray-700">Username</label>
+        <InputText
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className={classNames(
+            "w-full",
+            { "p-invalid": authErrors.username }
+          )}
+        />
+        {authErrors.username && (
+          <small className="text-red-500">
+            {authErrors.username}
+          </small>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-gray-700">Password</label>
+        <Password
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          feedback={false}
+          className="w-full"
+          pt={{
+            input: { className: 'w-full' }
+          }}
+        />
+        {authErrors.password && (
+          <small className="text-red-500">
+            {authErrors.password}
+          </small>
+        )}
+      </div>
+
+      <Button
+        type="submit"
+        label="Login"
+        loading={authLoading}
+        className="w-full p-button-lg"
+      />
+    </form>
+  </motion.div>
+</TabPanel>
+</TabView>
+</Card>
+</main>
+
+{/* Validation Result Dialog */}
+<Dialog
+  visible={showResult}
+  onHide={() => setShowResult(false)}
+  header="Coupon Validation Result"
+  className="w-full max-w-lg"
+>
+  {validationResult && (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
+      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+        <div className="flex items-center gap-2">
+          <CreditCard className="text-gray-500" />
+          <span>Original Amount</span>
+        </div>
+        <span className="text-lg font-semibold">
+          {formatCurrency(ORIGINAL_AMOUNT)}
+        </span>
+      </div>
+
+      <div className="flex justify-between items-center p-3 bg-green-50 rounded">
+        <div className="flex items-center gap-2">
+          <Tag className="text-green-500" />
+          <span>Discount</span>
+        </div>
+        <span className="text-lg font-semibold text-green-600">
+          -{formatCurrency(validationResult.discountAmount)}
+        </span>
+      </div>
+
+      <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
+        <div className="flex items-center gap-2">
+          <DollarSign className="text-blue-500" />
+          <span>Final Amount</span>
+        </div>
+        <span className="text-xl font-bold text-blue-600">
+          {formatCurrency(validationResult.finalAmount)}
+        </span>
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <Button
+          label="Close"
+          icon="pi pi-times"
+          className="p-button-outlined"
+          onClick={() => setShowResult(false)}
+        />
+      </div>
+    </motion.div>
+  )}
+</Dialog>
+
+<Footer />
+</div>
+);
 };
 
-export default CombinedLoginPage;
+export default LoginPage;
