@@ -73,6 +73,14 @@ class CouponService {
       throw new Error(error.response?.data?.message || 'Failed to validate coupons');
     }
   } 
+  async validateMultipleCoupons(coupons, orderAmount) {
+    try {
+      const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
+      return validationResult;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to validate coupons');
+    }
+  }
     // Check if coupons can be combined
     async canCombineCoupons(couponCodes) {
       try {
