@@ -39,9 +39,7 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute> {/* Protect these routes */}
               <AdminLayout>
-                <PageTransition> {/* Page transition animation */}
                   <Outlet /> {/* Nested routes will be rendered here */}
-                </PageTransition>
               </AdminLayout>
             </ProtectedRoute>
           }

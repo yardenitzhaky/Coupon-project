@@ -6,6 +6,7 @@ import { ShieldCheck } from 'lucide-react';
 import { Button } from 'primereact/button';
 import { useAuth } from '../features/auth/components/authContext';
 import { Footer } from './MainLayout';
+import PageTransition from '../features/design/PageTransition';
 
 // Header component for admin panel
 const AdminHeader = () => {
@@ -91,7 +92,9 @@ export const AdminLayout = () => {
 
         {/* Main Content Area */}
         <main className="ml-64 flex-1 p-8 bg-gray-50">
+        <PageTransition>
           <Outlet />
+        </PageTransition>  
         </main>
       </div>
       <Footer />
