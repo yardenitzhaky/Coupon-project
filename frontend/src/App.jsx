@@ -5,7 +5,6 @@ import { AuthProvider } from './features/auth/authContext';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 import {AdminLayout} from './layouts/AdminLayout';
 import {MainLayout} from './layouts/MainLayout';
-import EnhancedLoginPage from './features/auth/components/CombinedLoginPage';
 import CreateUserForm from './features/auth/components/CreateUserForm';
 import CouponList from './features/coupons/components/CouponList';
 import Reports from './features/reports/components/Reports';
@@ -48,10 +47,11 @@ const AnimatedRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<div>Dashboard Content</div>} />
           <Route path="create-user" element={<CreateUserForm />} />
           <Route path="coupons" element={<CouponList />} />
           <Route path="reports" element={<Reports />} />
+          <Route index element={<Navigate to="/admin/coupons" replace />} />
+          <Route path="dashboard" element={<Navigate to="/admin/coupons" replace />} />
         </Route>
 
         {/* Redirect root to login */}

@@ -52,36 +52,28 @@ export const AdminLayout = () => {
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-64 bg-white shadow h-full fixed">
-          <nav className="mt-5 px-2 space-y-2">
-            <Button
-              icon="pi pi-home"
-              label="Dashboard"
-              className={`p-button-text w-full justify-start ${
-                isActiveRoute('/admin/dashboard') ? 'bg-blue-50 text-blue-700' : ''
-              }`}
-              onClick={() => navigate('/admin/dashboard')}
-            />
+          <nav className="mt-2 px-10 space-y-15">
             <Button
               icon="pi pi-ticket"
               label="Coupons"
-              className={`p-button-text w-full justify-start ${
-                isActiveRoute('/admin/coupons') ? 'bg-blue-50 text-blue-700' : ''
+              className={`p-button-text w-full justify-start py-4 px-6 text-lg ${
+                isActiveRoute('/admin/coupons') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'
               }`}
               onClick={() => navigate('/admin/coupons')}
             />
             <Button
               icon="pi pi-chart-bar"
               label="Reports"
-              className={`p-button-text w-full justify-start ${
-                isActiveRoute('/admin/reports') ? 'bg-blue-50 text-blue-700' : ''
+              className={`p-button-text w-full justify-start py-4 px-6 text-lg ${
+                isActiveRoute('/admin/reports') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'
               }`}
               onClick={() => navigate('/admin/reports')}
             />
             <Button
               icon="pi pi-users"
               label="Create User"
-              className={`p-button-text w-full justify-start ${
-                isActiveRoute('/admin/create-user') ? 'bg-blue-50 text-blue-700' : ''
+              className={`p-button-text w-full justify-start py-4 px-6 text-lg ${
+                isActiveRoute('/admin/create-user') ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'
               }`}
               onClick={() => navigate('/admin/create-user')}
             />
