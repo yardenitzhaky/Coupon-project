@@ -53,7 +53,7 @@ export const authApi = {
     return response.data;
   },
 };
-
+//NOTE - DELETE ALL DUPLICATED CODE
 // Coupons API endpoints
 export const couponsApi = {
   getAll: async () => {

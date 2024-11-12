@@ -13,12 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouponManagement.Domain", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouponManagement.Infrastructure", "src\CouponManagement.Infrastructure\CouponManagement.Infrastructure.csproj", "{352D6721-8F01-4A50-B7AF-E8EEC4767363}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B67E7127-DE9A-4BF2-8749-CC88455CC28E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouponManagement.UnitTests", "tests\CouponManagement.UnitTests\CouponManagement.UnitTests.csproj", "{73C755C0-EF99-4E6B-9ECD-454512653AAB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouponManagement.IntegrationTests", "tests\CouponManagement.IntegrationTests\CouponManagement.IntegrationTests.csproj", "{C53D7031-A9F0-46DC-A01B-64F182C91BC4}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

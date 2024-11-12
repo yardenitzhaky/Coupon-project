@@ -190,38 +190,53 @@ namespace CouponManagement.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Coupon>> GetCouponsForReportAsync(
-            DateTime? startDate,
-            DateTime? endDate,
-            int? userId)
+public async Task<IEnumerable<Coupon>> GetCouponsForReportAsync(
+    DateTime? startDate,
+    DateTime? endDate,
+    int? userId)
+{
+    try
+    {
+        var query = _context.Coupons
+            .Include(c => c.CreatedBy)
+            .AsQueryable();
+
+        if (startDate.HasValue)
         {
-            try
-            {
-                var query = _context.Coupons
-                    .Include(c => c.CreatedBy)
-                    .AsQueryable();
-
-                if (startDate.HasValue)
-                    query = query.Where(c => c.CreatedAt >= startDate.Value);
-
-                if (endDate.HasValue)
-                    query = query.Where(c => c.CreatedAt <= endDate.Value);
-
-                if (userId.HasValue)
-                    query = query.Where(c => c.CreatedById == userId.Value);
-
-                return await query
-                    .OrderByDescending(c => c.CreatedAt)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while getting coupons for report with filters: StartDate={StartDate}, EndDate={EndDate}, UserId={UserId}",
-                    startDate, endDate, userId);
-                throw;
-            }
+            query = query.Where(c => c.CreatedAt >= startDate.Value);
+            _logger.LogInformation($"Applied start date filter: {startDate.Value}");
         }
 
+        if (endDate.HasValue)
+        {
+            query = query.Where(c => c.CreatedAt <= endDate.Value);
+            _logger.LogInformation($"Applied end date filter: {endDate.Value}");
+        }
+
+        if (userId.HasValue)
+        {
+            query = query.Where(c => c.CreatedById == userId.Value);
+            _logger.LogInformation($"Applied user filter: {userId.Value}");
+        }
+
+        // Log the generated SQL query
+        var sql = query.ToQueryString();
+        _logger.LogInformation($"Generated SQL query: {sql}");
+
+        var results = await query
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+
+        _logger.LogInformation($"Query returned {results.Count} results");
+        
+        return results;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error getting coupons for report");
+        throw;
+    }
+}
         public async Task<IDictionary<string, object>> GetCouponStatisticsAsync(
             DateTime? startDate,
             DateTime? endDate,

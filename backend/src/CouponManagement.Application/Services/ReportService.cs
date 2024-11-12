@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using CouponManagement.Application.DTOs;
 using CouponManagement.Infrastructure.Repositories;
 using ClosedXML.Excel;
+using CouponManagement.Domain.Entities;
 
 namespace CouponManagement.Application.Services
 {
@@ -108,11 +109,11 @@ namespace CouponManagement.Application.Services
                     worksheet.Cell(row, 2).Value = coupon.Description;
                     worksheet.Cell(row, 3).Value = coupon.DiscountType.ToString();
                     worksheet.Cell(row, 4).Value = coupon.DiscountValue;
-                    worksheet.Cell(row, 5).Value = coupon.CreatedBy.Username;
+                    worksheet.Cell(row, 5).Value = coupon.CreatedBy?.Username ?? "Unknown";
                     worksheet.Cell(row, 6).Value = coupon.CreatedAt;
                     worksheet.Cell(row, 7).Value = coupon.ExpiryDate;
                     worksheet.Cell(row, 8).Value = $"{coupon.CurrentUsageCount}/{coupon.MaxUsageCount ?? '∞'}";
-                    worksheet.Cell(row, 9).Value = coupon.IsActive ? "Active" : "Inactive";
+                    worksheet.Cell(row, 9).Value = GetCouponStatus(coupon);
                     row++;
                 }
 
@@ -146,5 +147,31 @@ namespace CouponManagement.Application.Services
                 throw;
             }
         }
+
+   private string GetCouponStatus(CouponManagement.Domain.Entities.Coupon coupon)
+{
+    if (!coupon.IsActive)
+        return "Inactive";
+    if (coupon.ExpiryDate.HasValue && coupon.ExpiryDate < DateTime.UtcNow)
+        return "Expired";
+    if (coupon.MaxUsageCount.HasValue && coupon.CurrentUsageCount >= coupon.MaxUsageCount.Value)
+        return "MaxedOut";
+    return "Active";
+}
+        public async Task<IEnumerable<Coupon>> GetCouponsForReportAsync(
+            DateTime? startDate, 
+            DateTime? endDate, 
+            int? userId)
+        {
+            try
+            {
+                return await _couponRepository.GetCouponsForReportAsync(startDate, endDate, userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting coupons for report");
+                throw;
+            }
+        }   
     }
 }

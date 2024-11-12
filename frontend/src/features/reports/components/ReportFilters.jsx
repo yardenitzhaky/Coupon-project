@@ -48,16 +48,17 @@ const ReportFilters = ({ onFilter, onExport, loading }) => {
   };
 
   // Handle user selection
-  const handleUserChange = (e) => {
-    setSelectedUser(e.value);
-    if (dateRange[0] && dateRange[1]) {
+const handleUserChange = (e) => {
+  console.log('Selected user value:', e.value); 
+  setSelectedUser(e.value);
+  if (dateRange[0] && dateRange[1]) {
       onFilter({
-        startDate: dateRange[0],
-        endDate: dateRange[1],
-        userId: e.value?.value
+          startDate: dateRange[0],
+          endDate: dateRange[1],
+          userId: e
       });
-    }
-  };
+  }
+};
 
   // Handle export button click
   const handleExport = () => {
@@ -89,7 +90,7 @@ const ReportFilters = ({ onFilter, onExport, loading }) => {
           />
         </div>
 
-        <div className="w-full md:w-auto">
+        {/* <div className="w-full md:w-auto">
           <label htmlFor="user" className="block text-sm font-medium text-gray-700 mb-1">
             Select Admin
           </label>
@@ -103,7 +104,7 @@ const ReportFilters = ({ onFilter, onExport, loading }) => {
             className="w-full"
             loading={loadingUsers}
           />
-        </div>
+        </div> */}
 
         <div className="flex items-end">
           <Button

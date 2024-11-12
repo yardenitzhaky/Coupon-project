@@ -12,14 +12,14 @@ class ReportService {
   }
 
   async getCouponsByUser(userId) {
-    this.checkAuth();
     try {
-      return await reportsApi.getCouponsByUser(userId);
+        const response = await api.get(`/reports/coupons/by-user/${userId}`);
+        return response.data;
     } catch (error) {
-      console.error('ReportService - getCouponsByUser error:', error);
-      throw error;
+        console.error('Error fetching coupons by user:', error);
+        throw new Error(error.response?.data?.message || 'Failed to fetch coupons by user');
     }
-  }
+}
 
   async getCouponsByDateRange(startDate, endDate) {
     this.checkAuth();

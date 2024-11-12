@@ -55,27 +55,30 @@ const Reports = () => {
   const loadData = async (currentFilters = filters) => {
     if (!isAuthenticated || !currentFilters.startDate || !currentFilters.endDate) return;
     try {
-      setReportLoading(true);
-      const data = currentFilters.userId
-        ? await reportService.getCouponsByUser(currentFilters.userId)
-        : await reportService.getCouponsByDateRange(
-            currentFilters.startDate,
-            currentFilters.endDate
+        setReportLoading(true);
+        console.log('Current filters being used:', currentFilters); 
+        let data;
+        
+        if (currentFilters.userId && currentFilters.userId.value) { // Check for userId.value
+          console.log('Fetching by user ID:', currentFilters.userId.value);
+          data = await reportService.getCouponsByUser(currentFilters.userId.value);
+      } else {
+          console.log('Fetching by date range');
+          data = await reportService.getCouponsByDateRange(
+              currentFilters.startDate,
+              currentFilters.endDate
           );
-      setCoupons(data || []);
-    } catch (error) {
-      console.error('Failed to load report data:', error);
-      showError('Error', 'Failed to load report data');
-      if (error.response?.status === 401) {
-        navigate('/login', {
-          replace: true,
-          state: { from: '/admin/reports' }
-        });
       }
+        
+        console.log('Fetched report data:', data); 
+        setCoupons(data || []);
+    } catch (error) {
+        console.error('Failed to load report data:', error);
+        showError('Error', 'Failed to load report data');
     } finally {
-      setReportLoading(false);
+        setReportLoading(false);
     }
-  };
+};
 
   // Filter handler
   const handleFilter = async (newFilters) => {

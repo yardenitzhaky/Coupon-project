@@ -31,13 +31,11 @@ namespace CouponManagement.Application.Common.Mappings
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Coupon Report mapping
-            CreateMap<Coupon, CouponReportDto>()
-                .ForMember(dest => dest.CreatedByUsername, 
-                    opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.Username : string.Empty))
-                .ForMember(dest => dest.DiscountType, 
-                    opt => opt.MapFrom(src => src.DiscountType.ToString()))
-                .ForMember(dest => dest.Status, 
-                    opt => opt.MapFrom(src => GetCouponStatus(src)));
+                CreateMap<Coupon, CouponReportDto>()
+            .ForMember(dest => dest.CreatedByUsername, 
+                opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.Username : string.Empty))
+            .ForMember(dest => dest.Status, 
+                opt => opt.MapFrom(src => GetCouponStatus(src)));
         }
 
         private DiscountType ParseDiscountType(string discountType)
