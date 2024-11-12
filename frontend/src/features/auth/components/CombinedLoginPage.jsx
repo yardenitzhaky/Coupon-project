@@ -11,7 +11,7 @@ import { Divider } from 'primereact/divider';
 import { classNames } from 'primereact/utils';
 import { Ripple } from 'primereact/ripple';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../authContext';
+import { useAuth } from './authContext';
 import LoadingSpinner from '../../design/LoadingSpinner';
 
 const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
@@ -403,21 +403,25 @@ const removeCoupon = async (couponToRemove) => {
 
       <div className="space-y-2 transition-all duration-200 hover:shadow-sm">
         <label className="text-gray-700">Password</label>
-        <Password
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          feedback={false}
-          className="w-full"
-          pt={{
-            input: { className: 'w-full' }
-          }}
-        />
-        {authErrors.password && (
-          <small className="text-red-500">
-            {authErrors.password}
-          </small>
-        )}
-      </div>
+          <div className="w-full">
+            <Password
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              toggleMask
+              feedback={false}
+              css={{ width: '100%' }}
+              containerClassName="w-full"
+              inputContainerClassName="w-full"
+              className="w-full !block"
+              inputClassName="!w-full"
+            />
+          </div>
+          {authErrors.password && (
+            <small className="text-red-500">
+              {authErrors.password}
+            </small>
+          )}
+         </div>
 
       <Button
         type="submit"

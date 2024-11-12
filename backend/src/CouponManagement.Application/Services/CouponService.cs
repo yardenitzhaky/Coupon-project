@@ -171,7 +171,7 @@ namespace CouponManagement.Application.Services
                     };
                 }
 
-                var coupon = await _couponRepository.GetByCodeAsync(code);
+                var coupon = await _couponRepository.GetByCodeAsync(code) ?? throw new NotFoundException(nameof(Coupon), code);
                 result.AppliedCoupons.Add(new AppliedCouponInfo
                 {
                     Code = code,

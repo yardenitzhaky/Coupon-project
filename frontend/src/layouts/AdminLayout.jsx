@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import { Button } from 'primereact/button';
-import { useAuth } from '../features/auth/authContext';
+import { useAuth } from '../features/auth/components/authContext';
 import { Footer } from './MainLayout';
 
 const AdminHeader = () => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../features/auth/authContext';
+import { useAuth } from '../../auth/components/authContext';
 import ReportFilters from './ReportFilters';
 import ReportTable from './ReportTable';
 import ReportStats from './ReportStats';

@@ -7,7 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { useNavigate } from 'react-router-dom';
 import { Messages } from 'primereact/messages';
 import { useRef } from 'react';
-import { useAuth } from '../authContext';
+import { useAuth } from './authContext';
 import { classNames } from 'primereact/utils';
 
 const AdminUserForm = () => {
@@ -169,8 +169,8 @@ const AdminUserForm = () => {
   };
 
   return (
-    <div className="flex justify-center">
-      <Card className="w-full max-w-lg">
+    <div className="flex justify-center p-7 w-full">
+      <Card className="w-full max-w-5xl shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-center">Create New User</h2>
         
         <Messages ref={messages} />
@@ -194,26 +194,32 @@ const AdminUserForm = () => {
             )}
           </div>
 
-          {/* Password field */}
+                  {/* Password field */}
           <div className="flex flex-col gap-2">
             <label htmlFor="password" className="font-medium">
               Password
             </label>
-            <Password
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              toggleMask
-              disabled={loading}
-              className={classNames({ 'p-invalid': errors.password })}
-              header={passwordHeader}
-              footer={passwordFooter}
-              promptLabel="Enter password"
-              weakLabel="Too simple"
-              mediumLabel="Average complexity"
-              strongLabel="Complex password"
-            />
+            <div className="w-full">
+              <Password
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                toggleMask
+                disabled={loading}
+                css={{ width: '100%' }}
+                containerClassName="w-full"
+                inputContainerClassName="w-full"
+                className={classNames('w-full !block', { 'p-invalid': errors.password })}
+                inputClassName="!w-full"
+                header={passwordHeader}
+                footer={passwordFooter}
+                promptLabel="Enter password"
+                weakLabel="Too simple"
+                mediumLabel="Average complexity"
+                strongLabel="Complex password"
+              />
+            </div>
             {errors.password && (
               <small className="text-red-500">{errors.password}</small>
             )}
@@ -224,16 +230,22 @@ const AdminUserForm = () => {
             <label htmlFor="confirmPassword" className="font-medium">
               Confirm Password
             </label>
-            <Password
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              toggleMask
-              disabled={loading}
-              className={classNames({ 'p-invalid': errors.confirmPassword })}
-              feedback={false}
-            />
+            <div className="w-full">
+              <Password
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                toggleMask
+                disabled={loading}
+                css={{ width: '100%' }}
+                containerClassName="w-full"
+                inputContainerClassName="w-full"
+                className={classNames('w-full !block', { 'p-invalid': errors.confirmPassword })}
+                inputClassName="!w-full"
+                feedback={false}
+              />
+            </div>
             {errors.confirmPassword && (
               <small className="text-red-500">{errors.confirmPassword}</small>
             )}
