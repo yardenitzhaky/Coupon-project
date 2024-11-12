@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
 import { Messages } from 'primereact/messages';
-import { useRef } from 'react';
+import { ProgressBar } from 'primereact/progressbar';
+import { Tag } from 'primereact/tag';
 import { Divider } from 'primereact/divider';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CouponValidator = () => {
-  // State for coupon code input
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const [validationResult, setValidationResult] = useState(null);
+  const [appliedCoupons, setAppliedCoupons] = useState([]);
+  const [currentTotal, setCurrentTotal] = useState(100);
   const messages = useRef(null);
 
-  // Constants
-  const ORIGINAL_AMOUNT = 100; // ₪100 fixed amount as specified
+  const INITIAL_AMOUNT = 100;
+  const API_URL = 'http://localhost:5190/api'; // Updated API URL
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+      minimumFractionDigits: 2
+    }).format(amount);
+  };
+
+  const calculateSavingsPercentage = () => {
+    return ((INITIAL_AMOUNT - currentTotal) / INITIAL_AMOUNT) * 100;
+  };
 
   const validateCoupon = async () => {
     if (!couponCode.trim()) {
@@ -29,29 +41,61 @@ const CouponValidator = () => {
       return;
     }
 
+    if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
+      messages.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'This coupon has already been applied',
+        life: 3000
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5190/api/coupons/validate', {
+      console.log('Validating coupon:', couponCode);
+      console.log('Current total:', currentTotal);
+      console.log('Previously applied coupons:', appliedCoupons.map(c => c.code));
+
+      const response = await fetch(`${API_URL}/coupons/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           code: couponCode,
-          orderAmount: ORIGINAL_AMOUNT
+          orderAmount: currentTotal,
+          previouslyAppliedCoupons: appliedCoupons.map(c => c.code)
         })
       });
 
       const result = await response.json();
-      
-      if (response.ok) {
-        setValidationResult(result);
-        setShowResult(true);
+      console.log('Validation response:', result);
+
+      if (response.ok && result.isValid) {
+        const newCoupon = {
+          code: couponCode,
+          discountAmount: result.discountAmount,
+          discountType: result.discountType,
+          discountValue: result.discountValue,
+          finalAmount: result.finalAmount
+        };
+
+        setAppliedCoupons(prev => [...prev, newCoupon]);
+        setCurrentTotal(result.finalAmount);
+        setCouponCode('');
+
+        messages.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
+          life: 3000
+        });
       } else {
         messages.current?.show({
           severity: 'error',
           summary: 'Error',
-          detail: result.message || 'Failed to validate coupon',
+          detail: result.message || 'Failed to apply coupon',
           life: 3000
         });
       }
@@ -68,91 +112,176 @@ const CouponValidator = () => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('he-IL', {
-      style: 'currency',
-      currency: 'ILS',
-      minimumFractionDigits: 2
-    }).format(amount);
+  const removeCoupon = async (couponToRemove) => {
+    setLoading(true);
+    try {
+      const remainingCoupons = appliedCoupons.filter(
+        coupon => coupon.code !== couponToRemove.code
+      );
+
+      if (remainingCoupons.length === 0) {
+        setAppliedCoupons([]);
+        setCurrentTotal(INITIAL_AMOUNT);
+      } else {
+        const response = await fetch(`${API_URL}/coupons/validate-multiple`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            couponCodes: remainingCoupons.map(coupon => coupon.code),
+            orderAmount: INITIAL_AMOUNT
+          })
+        });
+
+        const result = await response.json();
+        console.log('Recalculation response:', result);
+
+        if (result.isValid) {
+          setAppliedCoupons(
+            result.appliedCoupons.map(coupon => ({
+              code: coupon.code,
+              discountAmount: coupon.discountAmount,
+              discountType: coupon.discountType,
+              discountValue: coupon.discountValue,
+              finalAmount: coupon.finalAmount
+            }))
+          );
+          setCurrentTotal(result.finalAmount);
+        }
+      }
+    } catch (error) {
+      console.error('Error removing coupon:', error);
+      messages.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to remove coupon',
+        life: 3000
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      validateCoupon();
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <Card className="w-full max-w-md p-4">
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">Order Total: {formatCurrency(ORIGINAL_AMOUNT)}</h2>
-          <p className="text-sm text-gray-600 mt-2">Enter your coupon code to get a discount</p>
-        </div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+      <Card className="w-full max-w-xl relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg">
+            <ProgressBar mode="indeterminate" style={{ height: '6px', width: '200px' }} />
+          </div>
+        )}
 
-        <Messages ref={messages} />
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Original Amount: {formatCurrency(INITIAL_AMOUNT)}
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Enter coupon codes to get discounts
+            </p>
+          </div>
 
-        <div className="flex flex-col gap-4">
+          <Messages ref={messages} />
+
           <div className="p-inputgroup">
             <InputText
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Enter coupon code"
-              className="p-inputtext-lg"
+              disabled={loading}
             />
             <Button
               label="Apply"
+              icon="pi pi-plus"
               loading={loading}
               onClick={validateCoupon}
-              className="w-32"
             />
           </div>
 
-          <Divider align="center">
-            <span className="text-gray-500">or</span>
-          </Divider>
+          <AnimatePresence>
+            {appliedCoupons.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-3"
+              >
+                <h3 className="font-semibold">Applied Coupons:</h3>
+                {appliedCoupons.map((coupon) => (
+                  <motion.div
+                    key={coupon.code}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="flex justify-between items-center p-3 bg-blue-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Tag value={coupon.code} severity="info" />
+                      <span className="text-green-600 font-medium">
+                        -{formatCurrency(coupon.discountAmount)}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        ({coupon.discountType === 'Percentage' ? `${coupon.discountValue}%` : formatCurrency(coupon.discountValue)})
+                      </span>
+                    </div>
+                    <Button
+                      icon="pi pi-times"
+                      rounded
+                      text
+                      severity="danger"
+                      onClick={() => removeCoupon(coupon)}
+                      disabled={loading}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <Button
-            label="Continue to Login"
-            severity="secondary"
-            outlined
-            className="w-full"
-            onClick={() => window.location.href = '/login'}
-          />
-        </div>
-      </Card>
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Original Amount:</span>
+                <span className="font-semibold">{formatCurrency(INITIAL_AMOUNT)}</span>
+              </div>
 
-      <Dialog
-        visible={showResult}
-        onHide={() => setShowResult(false)}
-        header="Coupon Validation Result"
-        style={{ width: '90%', maxWidth: '500px' }}
-      >
-        {validationResult && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-              <span className="font-semibold">Original Amount:</span>
-              <span>{formatCurrency(ORIGINAL_AMOUNT)}</span>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-              <span className="font-semibold">Discount Amount:</span>
-              <span className="text-green-600">
-                -{formatCurrency(validationResult.discountAmount)}
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-              <span className="font-semibold">Final Amount:</span>
-              <span className="text-blue-600 text-xl">
-                {formatCurrency(validationResult.finalAmount)}
-              </span>
-            </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Total Savings:</span>
+                <span className="text-green-600 font-semibold">
+                  -{formatCurrency(INITIAL_AMOUNT - currentTotal)}
+                  <span className="text-sm ml-1">
+                    ({calculateSavingsPercentage().toFixed(1)}%)
+                  </span>
+                </span>
+              </div>
 
-            <div className="mt-4 flex justify-end">
-              <Button
-                label="Close"
-                icon="pi pi-times"
-                onClick={() => setShowResult(false)}
+              <ProgressBar
+                value={calculateSavingsPercentage()}
+                showValue={false}
+                style={{ height: '8px' }}
+                className="my-2"
               />
+
+              <Divider className="my-2" />
+
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold">Current Total:</span>
+                <span className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(currentTotal)}
+                </span>
+              </div>
             </div>
           </div>
-        )}
-      </Dialog>
+        </div>
+      </Card>
     </div>
   );
 };

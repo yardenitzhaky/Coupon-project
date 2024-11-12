@@ -46,15 +46,33 @@ class CouponService {
     }
   }
 
-  async validateCoupon(code, orderAmount) {
+   // Validate a single coupon
+   async validateCoupon(code, orderAmount, previouslyAppliedCoupons = []) {
     try {
-      const validationResult = await couponsApi.validate(code, orderAmount);
-      return validationResult;
+      const response = await api.post('/coupons/validate', {
+        code,
+        orderAmount,
+        previouslyAppliedCoupons
+      });
+      return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to validate coupon');
     }
   }
 
+
+   // Validate multiple coupons at once
+   async validateMultipleCoupons(couponCodes, orderAmount) {
+    try {
+      const response = await api.post('/coupons/validate-multiple', {
+        couponCodes,
+        orderAmount
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to validate coupons');
+    }
+  } 
   async validateMultipleCoupons(coupons, orderAmount) {
     try {
       const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
@@ -63,6 +81,15 @@ class CouponService {
       throw new Error(error.response?.data?.message || 'Failed to validate coupons');
     }
   }
+    // Check if coupons can be combined
+    async canCombineCoupons(couponCodes) {
+      try {
+        const response = await api.post('/coupons/can-combine', couponCodes);
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to check coupon compatibility');
+      }
+    }
 }
 
 export default new CouponService();

@@ -10,10 +10,13 @@ namespace CouponManagement.API.Controllers
     public class CouponsController : ControllerBase
     {
         private readonly ICouponService _couponService;
+        private readonly ILogger<CouponsController> _logger;
 
-        public CouponsController(ICouponService couponService)
+
+        public CouponsController(ICouponService couponService, ILogger<CouponsController> logger)
         {
             _couponService = couponService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -78,11 +81,58 @@ namespace CouponManagement.API.Controllers
             }
         }
 
-        [HttpPost("validate")]
-        public async Task<ActionResult<CouponValidationResult>> ValidateCoupon([FromBody] ValidateCouponRequest request)
+                [HttpPost("validate")]
+        public async Task<ActionResult<CouponValidationResult>> ValidateCoupon(
+            [FromBody] CouponValidationRequest request)
         {
-            var result = await _couponService.ValidateCouponAsync(request.Code, request.OrderAmount);
-            return Ok(result);
+            try
+            {
+                var result = await _couponService.ValidateCouponAsync(
+                    request.Code,
+                    request.OrderAmount,
+                    request.PreviouslyAppliedCoupons);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating coupon {Code}", request.Code);
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("validate-multiple")]
+        public async Task<ActionResult<MultiCouponValidationResult>> ValidateMultipleCoupons(
+            [FromBody] MultiCouponValidationRequest request)
+        {
+            try
+            {
+                var result = await _couponService.ValidateMultipleCouponsAsync(
+                    request.CouponCodes,
+                    request.OrderAmount);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating multiple coupons");
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("can-combine")]
+        public async Task<ActionResult<bool>> CanCombineCoupons([FromBody] List<string> couponCodes)
+        {
+            try
+            {
+                var result = await _couponService.CanCouponsBeUsedTogetherAsync(couponCodes);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking coupon compatibility");
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 

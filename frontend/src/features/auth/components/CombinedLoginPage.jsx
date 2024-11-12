@@ -14,6 +14,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../authContext';
 import LoadingSpinner from '../../design/LoadingSpinner';
 
+const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
+
+
 // Import Lucide icons
 import { 
   ShieldCheck, 
@@ -39,6 +42,8 @@ const LoginPage = () => {
   const [couponLoading, setCouponLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
+  const [appliedCoupons, setAppliedCoupons] = useState([]);
+  const [currentTotal, setCurrentTotal] = useState(ORIGINAL_AMOUNT);
   
   // Refs and hooks
   const messages = useRef(null);
@@ -46,8 +51,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
-
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -99,46 +102,146 @@ const LoginPage = () => {
   };
 
   // Handle coupon validation
-  const validateCoupon = async () => {
-    if (!couponCode.trim()) {
+// Handle coupon validation
+const validateCoupon = async () => {
+  if (!couponCode.trim()) {
+    messages.current?.show({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please enter a coupon code',
+      life: 3000
+    });
+    return;
+  }
+
+  // Check for duplicate coupons
+  if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
+    messages.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'This coupon has already been applied',
+      life: 3000
+    });
+    return;
+  }
+
+  setCouponLoading(true);
+  try {
+    const response = await fetch('http://localhost:5190/api/coupons/validate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code: couponCode,
+        orderAmount: currentTotal,
+        previouslyAppliedCoupons: appliedCoupons.map(c => c.code)
+      })
+    });
+
+    const result = await response.json();
+    console.log('Validation response:', result);
+
+    if (response.ok && result.isValid) {
+      // Add to applied coupons
+      const newCoupon = {
+        code: couponCode,
+        discountAmount: result.discountAmount,
+        finalAmount: result.finalAmount,
+        discountType: result.discountType,
+        discountValue: result.discountValue
+      };
+
+      setAppliedCoupons(prev => [...prev, newCoupon]);
+      setCurrentTotal(result.finalAmount);
+      setValidationResult(result);
+      setShowResult(true);
+      setCouponCode('');
+
       messages.current?.show({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please enter a coupon code',
+        severity: 'success',
+        summary: 'Success',
+        detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
         life: 3000
       });
-      return;
+    } else {
+      messages.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: result.message || 'Invalid coupon code',
+        life: 3000
+      });
     }
+  } catch (error) {
+    console.error('Coupon validation error:', error);
+    messages.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to validate coupon',
+      life: 3000
+    });
+  } finally {
+    setCouponLoading(false);
+  }
+};
 
-    setCouponLoading(true);
-    try {
-      const response = await fetch('/api/coupons/validate', {
+// Remove coupon function
+const removeCoupon = async (couponToRemove) => {
+  setCouponLoading(true);
+  try {
+    const remainingCoupons = appliedCoupons.filter(
+      coupon => coupon.code !== couponToRemove.code
+    );
+
+    if (remainingCoupons.length === 0) {
+      setAppliedCoupons([]);
+      setCurrentTotal(ORIGINAL_AMOUNT);
+    } else {
+      const response = await fetch('http://localhost:5190/api/coupons/validate-multiple', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          code: couponCode,
+          couponCodes: remainingCoupons.map(coupon => coupon.code),
           orderAmount: ORIGINAL_AMOUNT
         })
       });
 
       const result = await response.json();
-      if (response.ok) {
-        setValidationResult(result);
-        setShowResult(true);
-      } else {
-        throw new Error(result.message);
+
+      if (result.isValid) {
+        setAppliedCoupons(
+          result.appliedCoupons.map(coupon => ({
+            code: coupon.code,
+            discountAmount: coupon.discountAmount,
+            discountType: coupon.discountType,
+            discountValue: coupon.discountValue,
+            finalAmount: coupon.finalAmount
+          }))
+        );
+        setCurrentTotal(result.finalAmount);
       }
-    } catch (error) {
-      messages.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: error.message || 'Failed to validate coupon',
-        life: 3000
-      });
-    } finally {
-      setCouponLoading(false);
     }
-  };
+
+    messages.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Coupon removed successfully',
+      life: 3000
+    });
+  } catch (error) {
+    console.error('Error removing coupon:', error);
+    messages.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to remove coupon',
+      life: 3000
+    });
+  } finally {
+    setCouponLoading(false);
+  }
+};
 
   // Currency formatter
   const formatCurrency = (amount) => {
@@ -154,53 +257,114 @@ const LoginPage = () => {
       <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
         <Card className="w-full max-w-4xl shadow-2xl">
           <TabView className="border-none">
-            {/* Coupon Validation Tab */}
-            <TabPanel 
-              header={
-                <div className="flex items-center gap-2">
-                  <Tag size={18} />
-                  <span>Check Coupon</span>
-                </div>
-              }
-            >
-              <motion.div
-                variants={itemVariants}
-                className="p-6 space-y-6"
-              >
-                <div className="text-center">
-                  <Package className="w-16 h-16 mx-auto text-blue-500" />
-                  <h2 className="text-2xl font-bold mt-4">
-                    Order Total: {formatCurrency(ORIGINAL_AMOUNT)}
-                  </h2>
-                  <p className="text-gray-600 mt-2">
-                    Enter your coupon code to get a discount
-                  </p>
-                </div>
-  
-                <Messages ref={messages} />
+                  {/* Coupon Validation Tab */}
+      <TabPanel 
+        header={
+          <div className="flex items-center gap-2">
+            <Tag size={18} />
+            <span>Check Coupon</span>
+          </div>
+        }
+      >
+        <motion.div
+          variants={itemVariants}
+          className="p-6 space-y-6"
+        >
+          <div className="text-center">
+            <Package className="w-16 h-16 mx-auto text-blue-500" />
+            <h2 className="text-2xl font-bold mt-4">
+              Original Amount: {formatCurrency(ORIGINAL_AMOUNT)}
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Enter coupon codes to get discounts
+            </p>
+          </div>
 
-                <div className="space-y-4 max-w-md mx-auto">
-                  <div className="p-inputgroup">
-                    <span className="p-inputgroup-addon">
-                      <Tag className="w-4 h-4 text-gray-500" />
-                    </span>
-                    <InputText
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="w-full"
-                  />
-                </div>
+          <Messages ref={messages} />
 
-                  <Button
-                    label="Apply"
-                    icon="pi pi-check"
-                    loading={couponLoading}
-                    onClick={validateCoupon}
-                  />
+          <div className="space-y-4 max-w-md mx-auto">
+            <div className="p-inputgroup">
+              <span className="p-inputgroup-addon">
+                <Tag className="w-4 h-4 text-gray-500" />
+              </span>
+              <InputText
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Enter coupon code"
+                className="w-full"
+                onKeyPress={(e) => e.key === 'Enter' && validateCoupon()}
+              />
+              <Button
+                label=""
+                icon="pi pi-check"
+                loading={couponLoading}
+                onClick={validateCoupon}
+              />
+            </div>
+
+            {/* Applied Coupons List */}
+            <AnimatePresence>
+              {appliedCoupons.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-3"
+                >
+                  <h3 className="font-semibold">Applied Coupons:</h3>
+                  {appliedCoupons.map((coupon) => (
+                    <motion.div
+                      key={coupon.code}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="flex justify-between items-center p-3 bg-blue-50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Tag className="bg-blue-100 text-blue-800 rounded px-2 py-1" value={coupon.code} />
+                        <span className="text-green-600 font-medium">
+                          -{formatCurrency(coupon.discountAmount)}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          ({coupon.discountType === 'Percentage' 
+                            ? `${coupon.discountValue}%` 
+                            : formatCurrency(coupon.discountValue)})
+                        </span>
+                      </div>
+                      <Button
+                        icon="pi pi-times"
+                        rounded
+                        text
+                        severity="danger"
+                        onClick={() => removeCoupon(coupon)}
+                        disabled={couponLoading}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Current Total Display */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold">Current Total:</span>
+                <span className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(currentTotal)}
+                </span>
+              </div>
+              {appliedCoupons.length > 0 && (
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-sm text-gray-600">Total Savings:</span>
+                  <span className="text-green-600">
+                    -{formatCurrency(ORIGINAL_AMOUNT - currentTotal)}
+                  </span>
                 </div>
-              </motion.div>
-            </TabPanel>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </TabPanel>
   {/* Admin Login Tab */}
 <TabPanel
   header={
