@@ -101,7 +101,6 @@ const LoginPage = () => {
     }
   };
 
-  // Handle coupon validation
 // Handle coupon validation
 const validateCoupon = async () => {
   if (!couponCode.trim()) {
@@ -255,12 +254,12 @@ const removeCoupon = async (couponToRemove) => {
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {couponLoading && <LoadingSpinner />}  
       <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
-        <Card className="w-full max-w-4xl shadow-2xl">
+      <Card className="w-full max-w-4xl shadow-2xl transition-all duration-300 hover:shadow-3xl">
           <TabView className="border-none">
                   {/* Coupon Validation Tab */}
       <TabPanel 
         header={
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 transition-colors duration-200 hover:text-blue-600">
             <Tag size={18} />
             <span>Check Coupon</span>
           </div>
@@ -283,7 +282,7 @@ const removeCoupon = async (couponToRemove) => {
           <Messages ref={messages} />
 
           <div className="space-y-4 max-w-md mx-auto">
-            <div className="p-inputgroup">
+          <div className="p-inputgroup transition-all duration-200 hover:shadow-md">
               <span className="p-inputgroup-addon">
                 <Tag className="w-4 h-4 text-gray-500" />
               </span>
@@ -299,51 +298,49 @@ const removeCoupon = async (couponToRemove) => {
                 icon="pi pi-check"
                 loading={couponLoading}
                 onClick={validateCoupon}
+                className="transition-all duration-200 hover:scale-105"
               />
             </div>
 
-            {/* Applied Coupons List */}
-            <AnimatePresence>
-              {appliedCoupons.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-3"
-                >
-                  <h3 className="font-semibold">Applied Coupons:</h3>
-                  {appliedCoupons.map((coupon) => (
-                    <motion.div
-                      key={coupon.code}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      className="flex justify-between items-center p-3 bg-blue-50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Tag className="bg-blue-100 text-blue-800 rounded px-2 py-1" value={coupon.code} />
-                        <span className="text-green-600 font-medium">
-                          -{formatCurrency(coupon.discountAmount)}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          ({coupon.discountType === 'Percentage' 
-                            ? `${coupon.discountValue}%` 
-                            : formatCurrency(coupon.discountValue)})
-                        </span>
-                      </div>
-                      <Button
-                        icon="pi pi-times"
-                        rounded
-                        text
-                        severity="danger"
-                        onClick={() => removeCoupon(coupon)}
-                        disabled={couponLoading}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+           {/* Applied Coupons List */}
+              <AnimatePresence>
+                {appliedCoupons.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="space-y-3"
+                  >
+                    <h3 className="font-semibold">Applied Coupons:</h3>
+                    {appliedCoupons.map((coupon) => (
+                      <motion.div
+                        key={coupon.code}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="flex justify-between items-center p-3 bg-blue-50 rounded-lg transition-all duration-200 hover:bg-blue-100 hover:shadow-md"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Tag value={coupon.code} severity="info" />
+                          <span className="text-green-600 font-medium">
+                            -{formatCurrency(coupon.discountAmount)}
+                          </span>
+                        </div>
+                        
+                        <Button
+                          icon="pi pi-times"
+                          rounded
+                          text
+                          severity="danger"
+                          onClick={() => removeCoupon(coupon)}
+                          disabled={couponLoading}
+                          className="transition-all duration-200 hover:scale-110"
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
             {/* Current Total Display */}
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
@@ -368,8 +365,8 @@ const removeCoupon = async (couponToRemove) => {
   {/* Admin Login Tab */}
 <TabPanel
   header={
-    <div className="flex items-center gap-2">
-      <Lock size={18} />
+    <div className="flex items-center gap-2 transition-colors duration-200 hover:text-blue-600">
+    <Lock size={18} />
       <span>Admin Login</span>
     </div>
   }
@@ -387,7 +384,7 @@ const removeCoupon = async (couponToRemove) => {
     <Messages ref={messages} />
 
     <form onSubmit={handleLogin} className="space-y-4">
-      <div className="space-y-2">
+    <div className="space-y-2 transition-all duration-200 hover:shadow-sm">
         <label className="text-gray-700">Username</label>
         <InputText
           value={username}
@@ -404,7 +401,7 @@ const removeCoupon = async (couponToRemove) => {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 transition-all duration-200 hover:shadow-sm">
         <label className="text-gray-700">Password</label>
         <Password
           value={password}
@@ -426,8 +423,8 @@ const removeCoupon = async (couponToRemove) => {
         type="submit"
         label="Login"
         loading={authLoading}
-        className="w-full p-button-lg"
-      />
+        className="w-full p-button-lg transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+        />
     </form>
   </motion.div>
 </TabPanel>
@@ -440,7 +437,7 @@ const removeCoupon = async (couponToRemove) => {
   visible={showResult}
   onHide={() => setShowResult(false)}
   header="Coupon Validation Result"
-  className="w-full max-w-lg"
+  className="w-full max-w-lg transition-transform duration-200 hover:scale-[1.01]"
 >
   {validationResult && (
     <motion.div
@@ -448,7 +445,7 @@ const removeCoupon = async (couponToRemove) => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
     >
-      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+<div className="flex justify-between items-center p-3 bg-gray-50 rounded transition-all duration-200 hover:bg-gray-100">
         <div className="flex items-center gap-2">
           <CreditCard className="text-gray-500" />
           <span>Original Amount</span>
@@ -458,8 +455,8 @@ const removeCoupon = async (couponToRemove) => {
         </span>
       </div>
 
-      <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center p-3 bg-gray-50 rounded transition-all duration-200 hover:bg-gray-100">
+        <div className="flex justify-between items-center p-3 bg-green-50 rounded transition-all duration-200 hover:bg-green-100">
           <Tag className="text-green-500" />
           <span>Discount</span>
         </div>
@@ -468,8 +465,8 @@ const removeCoupon = async (couponToRemove) => {
         </span>
       </div>
 
-      <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center p-3 bg-gray-50 rounded transition-all duration-200 hover:bg-gray-100">
+        <div className="flex justify-between items-center p-3 bg-blue-50 rounded transition-all duration-200 hover:bg-blue-100">
           <DollarSign className="text-blue-500" />
           <span>Final Amount</span>
         </div>
@@ -482,7 +479,7 @@ const removeCoupon = async (couponToRemove) => {
         <Button
           label="Close"
           icon="pi pi-times"
-          className="p-button-outlined"
+          className="p-button-outlined transition-all duration-200 hover:scale-105"
           onClick={() => setShowResult(false)}
         />
       </div>
