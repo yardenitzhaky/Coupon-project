@@ -2,8 +2,9 @@ import React from 'react';
 import { Card } from 'primereact/card';
 
 const ReportStats = ({ data }) => {
-  // Calculate statistics
+  // Calculate statistics from coupon data
   const calculateStats = () => {
+    // Return default values if no data
     if (!data || data.length === 0) {
       return {
         totalCoupons: 0,
@@ -15,22 +16,23 @@ const ReportStats = ({ data }) => {
     }
 
     const now = new Date();
-    
+
+    // Reduce data to calculate statistics
     const stats = data.reduce((acc, coupon) => {
-      // Count active coupons
+      // Track active coupons
       if (coupon.isActive) {
         acc.activeCoupons++;
       }
 
-      // Count expired coupons
+      // Track expired coupons
       if (coupon.expiryDate && new Date(coupon.expiryDate) < now) {
         acc.expiredCoupons++;
       }
 
-      // Sum total usage
+      // Sum usage counts
       acc.totalUsage += coupon.currentUsageCount;
 
-      // Calculate average discount
+      // Calculate percentage discounts average
       if (coupon.discountType === 'PERCENTAGE') {
         acc.totalDiscountPercentage += coupon.discountValue;
         acc.percentageCount++;
@@ -45,41 +47,48 @@ const ReportStats = ({ data }) => {
       percentageCount: 0
     });
 
+    // Return final calculated stats
     return {
       totalCoupons: data.length,
       activeCoupons: stats.activeCoupons,
       expiredCoupons: stats.expiredCoupons,
       totalUsage: stats.totalUsage,
-      averageDiscount: stats.percentageCount > 0 
+      averageDiscount: stats.percentageCount > 0
         ? (stats.totalDiscountPercentage / stats.percentageCount).toFixed(1)
         : 0
     };
   };
 
+  // Get calculated statistics
   const stats = calculateStats();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+      {/* Total Coupons Card */}
       <Card className="text-center">
         <div className="text-xl font-bold text-blue-600">{stats.totalCoupons}</div>
         <div className="text-sm text-gray-600">Total Coupons</div>
       </Card>
 
+      {/* Active Coupons Card */}
       <Card className="text-center">
         <div className="text-xl font-bold text-green-600">{stats.activeCoupons}</div>
         <div className="text-sm text-gray-600">Active Coupons</div>
       </Card>
 
+      {/* Expired Coupons Card */}
       <Card className="text-center">
         <div className="text-xl font-bold text-yellow-600">{stats.expiredCoupons}</div>
         <div className="text-sm text-gray-600">Expired Coupons</div>
       </Card>
 
+      {/* Total Usage Card */}
       <Card className="text-center">
         <div className="text-xl font-bold text-purple-600">{stats.totalUsage}</div>
         <div className="text-sm text-gray-600">Total Usage</div>
       </Card>
 
+      {/* Average Discount Card */}
       <Card className="text-center">
         <div className="text-xl font-bold text-indigo-600">{stats.averageDiscount}%</div>
         <div className="text-sm text-gray-600">Avg. Discount</div>

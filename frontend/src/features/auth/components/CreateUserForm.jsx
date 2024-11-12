@@ -9,6 +9,7 @@ import { Messages } from 'primereact/messages';
 import { useRef } from 'react';
 import { useAuth } from './authContext';
 import { classNames } from 'primereact/utils';
+import PageTransition from '../../design/PageTransition';
 
 const AdminUserForm = () => {
   const navigate = useNavigate();
@@ -59,7 +60,6 @@ const AdminUserForm = () => {
       const hasNumber = /\d/.test(formData.password);
       const hasUpper = /[A-Z]/.test(formData.password);
       const hasLower = /[a-z]/.test(formData.password);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
       
       if (formData.password.length < 8) {
         newErrors.password = 'Password must be at least 8 characters long';
@@ -97,9 +97,7 @@ const AdminUserForm = () => {
         confirmPassword: formData.confirmPassword,
       };
 
-      // Log the request payload
       console.log('Submitting user data:', userData);
-      
       const result = await createUser(userData);
       console.log('Registration success:', result);
 
@@ -115,10 +113,6 @@ const AdminUserForm = () => {
         password: '',
         confirmPassword: '',
       });
-
-      // setTimeout(() => {
-      //   navigate('/admin/users');
-      // }, 2000);
 
     } catch (error) {
       console.error('Create user error:', error);
@@ -169,12 +163,13 @@ const AdminUserForm = () => {
   };
 
   return (
+    <PageTransition>
     <div className="flex justify-center p-7 w-full">
       <Card className="w-full max-w-5xl shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-center">Create New User</h2>
         
         <Messages ref={messages} />
-
+  
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username field */}
           <div className="flex flex-col gap-2">
@@ -193,8 +188,8 @@ const AdminUserForm = () => {
               <small className="text-red-500">{errors.username}</small>
             )}
           </div>
-
-                  {/* Password field */}
+  
+          {/* Password field */}
           <div className="flex flex-col gap-2">
             <label htmlFor="password" className="font-medium">
               Password
@@ -224,7 +219,7 @@ const AdminUserForm = () => {
               <small className="text-red-500">{errors.password}</small>
             )}
           </div>
-
+  
           {/* Confirm Password field */}
           <div className="flex flex-col gap-2">
             <label htmlFor="confirmPassword" className="font-medium">
@@ -250,7 +245,7 @@ const AdminUserForm = () => {
               <small className="text-red-500">{errors.confirmPassword}</small>
             )}
           </div>
-
+  
           {/* Form Actions */}
           <div className="flex gap-2 justify-end">
             <Button
@@ -263,7 +258,9 @@ const AdminUserForm = () => {
         </form>
       </Card>
     </div>
+    </PageTransition>
   );
-};
+  };
+  
 
 export default AdminUserForm;

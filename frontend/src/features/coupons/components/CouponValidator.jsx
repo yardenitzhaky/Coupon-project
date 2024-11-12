@@ -7,7 +7,9 @@ import { ProgressBar } from 'primereact/progressbar';
 import { Tag } from 'primereact/tag';
 import { Divider } from 'primereact/divider';
 import { motion, AnimatePresence } from 'framer-motion';
+import couponService from '../../../services/couponService'; 
 
+// CouponValidator component handles coupon application and validation logic
 const CouponValidator = () => {
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ const CouponValidator = () => {
   const messages = useRef(null);
 
   const INITIAL_AMOUNT = 100;
-  const API_URL = 'http://localhost:5190/api'; // Updated API URL
+  const API_URL = 'http://localhost:5190/api';
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('he-IL', {
@@ -30,138 +32,132 @@ const CouponValidator = () => {
     return ((INITIAL_AMOUNT - currentTotal) / INITIAL_AMOUNT) * 100;
   };
 
-  const validateCoupon = async () => {
-    if (!couponCode.trim()) {
-      messages.current?.show({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please enter a coupon code',
-        life: 3000
-      });
-      return;
-    }
-
-    if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
-      messages.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'This coupon has already been applied',
-        life: 3000
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      console.log('Validating coupon:', couponCode);
-      console.log('Current total:', currentTotal);
-      console.log('Previously applied coupons:', appliedCoupons.map(c => c.code));
-
-      const response = await fetch(`${API_URL}/coupons/validate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: couponCode,
-          orderAmount: currentTotal,
-          previouslyAppliedCoupons: appliedCoupons.map(c => c.code)
-        })
-      });
-
-      const result = await response.json();
-      console.log('Validation response:', result);
-
-      if (response.ok && result.isValid) {
-        const newCoupon = {
-          code: couponCode,
-          discountAmount: result.discountAmount,
-          discountType: result.discountType,
-          discountValue: result.discountValue,
-          finalAmount: result.finalAmount
-        };
-
-        setAppliedCoupons(prev => [...prev, newCoupon]);
-        setCurrentTotal(result.finalAmount);
-        setCouponCode('');
-
+    // Function to validate a single coupon
+    const validateCoupon = async () => {
+      // Input validation
+      if (!couponCode.trim()) {
         messages.current?.show({
-          severity: 'success',
-          summary: 'Success',
-          detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please enter a coupon code',
           life: 3000
         });
-      } else {
+        return;
+      }
+  
+      // Check for duplicate coupons
+      if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
         messages.current?.show({
           severity: 'error',
           summary: 'Error',
-          detail: result.message || 'Failed to apply coupon',
+          detail: 'This coupon has already been applied',
           life: 3000
         });
+        return;
       }
-    } catch (error) {
-      console.error('Coupon validation error:', error);
-      messages.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to validate coupon',
-        life: 3000
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const removeCoupon = async (couponToRemove) => {
-    setLoading(true);
-    try {
-      const remainingCoupons = appliedCoupons.filter(
-        coupon => coupon.code !== couponToRemove.code
-      );
-
-      if (remainingCoupons.length === 0) {
-        setAppliedCoupons([]);
-        setCurrentTotal(INITIAL_AMOUNT);
-      } else {
-        const response = await fetch(`${API_URL}/coupons/validate-multiple`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            couponCodes: remainingCoupons.map(coupon => coupon.code),
-            orderAmount: INITIAL_AMOUNT
-          })
-        });
-
-        const result = await response.json();
-        console.log('Recalculation response:', result);
-
+  
+      setLoading(true);
+      try {
+        // Use couponService instead of direct fetch
+        const result = await couponService.validateCoupon(
+          couponCode,
+          currentTotal,
+          appliedCoupons.map(c => c.code)
+        );
+  
+        // Handle successful validation
         if (result.isValid) {
-          setAppliedCoupons(
-            result.appliedCoupons.map(coupon => ({
-              code: coupon.code,
-              discountAmount: coupon.discountAmount,
-              discountType: coupon.discountType,
-              discountValue: coupon.discountValue,
-              finalAmount: coupon.finalAmount
-            }))
-          );
+          // Create new coupon object with validation results
+          const newCoupon = {
+            code: couponCode,
+            discountAmount: result.discountAmount,
+            discountType: result.discountType,
+            discountValue: result.discountValue,
+            finalAmount: result.finalAmount
+          };
+  
+          // Update state with new coupon and total
+          setAppliedCoupons(prev => [...prev, newCoupon]);
           setCurrentTotal(result.finalAmount);
+          setCouponCode('');
+  
+          // Show success message
+          messages.current?.show({
+            severity: 'success',
+            summary: 'Success',
+            detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
+            life: 3000
+          });
         }
+      } catch (error) {
+        // Error handling
+        console.error('Coupon validation error:', error);
+        messages.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'Failed to validate coupon',
+          life: 3000
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error removing coupon:', error);
-      messages.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to remove coupon',
-        life: 3000
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+  
+    // Function to remove a coupon
+    const removeCoupon = async (couponToRemove) => {
+      setLoading(true);
+      try {
+        // Get remaining coupons after removal
+        const remainingCoupons = appliedCoupons.filter(
+          coupon => coupon.code !== couponToRemove.code
+        );
+  
+        // If no coupons left, reset to initial state
+        if (remainingCoupons.length === 0) {
+          setAppliedCoupons([]);
+          setCurrentTotal(INITIAL_AMOUNT);
+        } else {
+          // Revalidate remaining coupons using service
+          const result = await couponService.validateMultipleCoupons(
+            remainingCoupons.map(coupon => coupon.code),
+            INITIAL_AMOUNT
+          );
+  
+          // Update state with recalculated values
+          if (result.isValid) {
+            setAppliedCoupons(
+              result.appliedCoupons.map(coupon => ({
+                code: coupon.code,
+                discountAmount: coupon.discountAmount,
+                discountType: coupon.discountType,
+                discountValue: coupon.discountValue,
+                finalAmount: coupon.finalAmount
+              }))
+            );
+            setCurrentTotal(result.finalAmount);
+          }
+        }
+  
+        // Show success message
+        messages.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Coupon removed successfully',
+          life: 3000
+        });
+      } catch (error) {
+        // Error handling
+        console.error('Error removing coupon:', error);
+        messages.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'Failed to remove coupon',
+          life: 3000
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -172,11 +168,11 @@ const CouponValidator = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
       <Card className="w-full max-w-xl relative">
-        {loading && (
+        {/* {loading && (
           <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg">
             <ProgressBar mode="indeterminate" style={{ height: '6px', width: '200px' }} />
           </div>
-        )}
+        )} */}
 
         <div className="space-y-6">
           <div className="text-center">

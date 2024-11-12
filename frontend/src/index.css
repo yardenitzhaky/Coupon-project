@@ -1,8 +1,11 @@
+/* Tailwind CSS imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom component styles using Tailwind */
 @layer components {
+  /* PrimeReact component overrides */
   .p-button {
     @apply transition-colors duration-200;
   }
@@ -15,6 +18,7 @@
     @apply w-full;
   }
 
+  /* Admin sidebar navigation styles */
   .admin-sidebar-link {
     @apply flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200;
   }
@@ -24,21 +28,21 @@
   }
 }
 
+/* Custom checkbox styling */
 .custom-checkbox .p-checkbox-box {
-  border: 2px solid #007ad9; /* Change border color */
-  width: 20px; /* Increase size for better visibility */
-  height: 20px; /* Increase size for better visibility */
+  border: 2px solid #007ad9;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .custom-checkbox .p-checkbox-box.p-highlight {
-  border-color: #005bb5; /* Change border color when checked */
+  border-color: #005bb5;
 }
 
 .custom-checkbox .p-checkbox-icon {
-  font-size: 1.2em; /* Increase checkmark size */
-  color: white; /* Change checkmark color */
+  font-size: 1.2em;
+  color: white;
 }
-

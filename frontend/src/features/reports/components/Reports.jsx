@@ -1,4 +1,3 @@
-// src/features/reports/components/Reports.jsx
 import React, { useState, useEffect } from 'react';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
@@ -8,16 +7,20 @@ import ReportFilters from './ReportFilters';
 import ReportTable from './ReportTable';
 import ReportStats from './ReportStats';
 import reportService from '../../../services/reportService';
+import PageTransition from '../../design/PageTransition';
 
 const Reports = () => {
+  // Auth and navigation hooks
   const { isAuthenticated, user, loading } = useAuth();
   const navigate = useNavigate();
   const toast = useRef(null);
 
+  // Date range initialization for reports
   const today = new Date();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(today.getDate() - 30);
 
+  // Component state
   const [reportLoading, setReportLoading] = useState(false);
   const [coupons, setCoupons] = useState([]);
   const [filters, setFilters] = useState({
@@ -26,47 +29,45 @@ const Reports = () => {
     userId: null
   });
 
+  // Debug auth state changes
   useEffect(() => {
     console.log('Auth state:', { isAuthenticated, loading, user });
   }, [isAuthenticated, loading, user]);
 
-  // Redirect if not authenticated
+  // Authentication redirect
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      navigate('/login', { 
+      navigate('/login', {
         replace: true,
         state: { from: '/admin/reports' }
       });
     }
   }, [isAuthenticated, loading, navigate]);
 
-  // Load initial data
+  // Initial data load
   useEffect(() => {
     if (isAuthenticated && !loading) {
       loadData(filters);
     }
   }, [isAuthenticated, loading]);
 
+  // Data fetching function
   const loadData = async (currentFilters = filters) => {
     if (!isAuthenticated || !currentFilters.startDate || !currentFilters.endDate) return;
-
     try {
       setReportLoading(true);
-    
-
       const data = currentFilters.userId
         ? await reportService.getCouponsByUser(currentFilters.userId)
         : await reportService.getCouponsByDateRange(
             currentFilters.startDate,
             currentFilters.endDate
           );
-
       setCoupons(data || []);
     } catch (error) {
       console.error('Failed to load report data:', error);
       showError('Error', 'Failed to load report data');
       if (error.response?.status === 401) {
-        navigate('/login', { 
+        navigate('/login', {
           replace: true,
           state: { from: '/admin/reports' }
         });
@@ -76,6 +77,7 @@ const Reports = () => {
     }
   };
 
+  // Filter handler
   const handleFilter = async (newFilters) => {
     if (!newFilters.startDate || !newFilters.endDate) {
       showError('Error', 'Please select both start and end dates');
@@ -85,12 +87,12 @@ const Reports = () => {
     await loadData(newFilters);
   };
 
+  // Export handler
   const handleExport = async (exportFilters) => {
     if (!exportFilters.startDate || !exportFilters.endDate) {
       showError('Error', 'Please select both start and end dates');
       return;
     }
-    
     try {
       setReportLoading(true);
       await reportService.exportCoupons(exportFilters);
@@ -103,6 +105,7 @@ const Reports = () => {
     }
   };
 
+  // Toast notification helpers
   const showSuccess = (summary, detail) => {
     toast.current?.show({
       severity: 'success',
@@ -121,15 +124,9 @@ const Reports = () => {
     });
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   return (
+  <PageTransition>
     <div className="p-4">
       <Toast ref={toast} />
 
@@ -153,6 +150,7 @@ const Reports = () => {
         loading={reportLoading}
       />
     </div>
+  </PageTransition>
   );
 };
 

@@ -53,7 +53,6 @@ const ReportTable = ({ data, loading }) => {
         loading={loading}
         paginator
         rows={10}
-        rowsPerPageOptions={[5, 10, 25, 50]}
         emptyMessage="No coupons found"
         responsiveLayout="scroll"
         className="p-datatable-sm"

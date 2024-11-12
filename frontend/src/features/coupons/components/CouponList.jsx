@@ -6,12 +6,14 @@ import { Tag } from 'primereact/tag';
 import { confirmDialog } from 'primereact/confirmdialog';
 import couponService from '../../../services/couponService';
 import CouponDialog from './CouponDialog';
+import PageTransition from '../../design/PageTransition';
 
+// CouponList component handles the display and management of coupons
 const CouponList = () => {
-  const [coupons, setCoupons] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [coupons, setCoupons] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  const [dialogVisible, setDialogVisible] = useState(false); 
+  const [selectedCoupon, setSelectedCoupon] = useState(null); 
 
   useEffect(() => {
     loadCoupons();
@@ -32,16 +34,19 @@ const CouponList = () => {
     return new Date(value).toLocaleDateString();
   };
 
+  // Format discount value based on discount type (percentage or fixed amount)
   const formatDiscountValue = (coupon) => {
-    return coupon.discountType === 'PERCENTAGE' 
-      ? `${coupon.discountValue}%`
-      : `₪${coupon.discountValue}`;
+    return coupon.discountType === 'PERCENTAGE'
+      ? `${coupon.discountValue}%` 
+      : `₪${coupon.discountValue}`; 
   };
 
+  // Template for rendering coupon status with appropriate tags
   const statusTemplate = (rowData) => {
     const isExpired = rowData.expiryDate && new Date(rowData.expiryDate) < new Date();
     const isMaxedOut = rowData.maxUsageCount && rowData.currentUsageCount >= rowData.maxUsageCount;
     
+    // Return appropriate status tag based on conditions
     if (!rowData.isActive) {
       return <Tag severity="danger" value="Inactive" />;
     }
@@ -57,17 +62,17 @@ const CouponList = () => {
   const actionTemplate = (rowData) => {
     return (
       <div className="flex gap-2">
-        <Button 
-          icon="pi pi-pencil" 
-          rounded 
-          text 
-          severity="info" 
+        <Button
+          icon="pi pi-pencil"
+          rounded
+          text
+          severity="info"
           onClick={() => openEditDialog(rowData)}
         />
-        <Button 
-          icon="pi pi-trash" 
-          rounded 
-          text 
+        <Button
+          icon="pi pi-trash"
+          rounded
+          text
           severity="danger"
           onClick={() => confirmDelete(rowData)}
         />
@@ -80,6 +85,7 @@ const CouponList = () => {
     setDialogVisible(true);
   };
 
+  // Show confirmation dialog before deleting a coupon
   const confirmDelete = (coupon) => {
     confirmDialog({
       message: 'Are you sure you want to delete this coupon?',
@@ -89,9 +95,11 @@ const CouponList = () => {
     });
   };
 
+  // Handle the actual deletion of a coupon
   const handleDelete = async (id) => {
     try {
       await couponService.deleteCoupon(id);
+      // Update local state by filtering out the deleted coupon
       setCoupons(coupons.filter(c => c.id !== id));
     } catch (error) {
       console.error('Failed to delete coupon:', error);
@@ -103,12 +111,15 @@ const CouponList = () => {
     setSelectedCoupon(null);
   };
 
+  // Handle saving of coupon data (both create and update)
   const onSave = async (couponData) => {
     try {
       if (selectedCoupon) {
+        // Update existing coupon
         const updated = await couponService.updateCoupon(selectedCoupon.id, couponData);
         setCoupons(coupons.map(c => c.id === updated.id ? updated : c));
       } else {
+        // Create new coupon
         const created = await couponService.createCoupon(couponData);
         setCoupons([...coupons, created]);
       }
@@ -119,7 +130,8 @@ const CouponList = () => {
   };
 
   return (
-    <div className="card">
+    <PageTransition>
+    <div className="card p-4 mb-16">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-bold">Coupons</h2>
         <Button 
@@ -134,7 +146,6 @@ const CouponList = () => {
         loading={loading}
         paginator 
         rows={10} 
-        rowsPerPageOptions={[5, 10, 25]}
         stripedRows
       >
         <Column field="code" header="Code" sortable />
@@ -172,6 +183,7 @@ const CouponList = () => {
         coupon={selectedCoupon}
       />
     </div>
+    </PageTransition>
   );
 };
 

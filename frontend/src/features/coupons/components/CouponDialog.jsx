@@ -14,6 +14,7 @@ const discountTypes = [
   { label: 'Fixed Amount', value: 'FixedAmount' }
 ];
 
+// CouponDialog component for creating/editing coupons
 const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
   const [formData, setFormData] = useState({
     code: '',
@@ -25,8 +26,10 @@ const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
     allowMultipleDiscounts: false,
     isActive: true
   });
+
   const [errors, setErrors] = useState({});
 
+  // Effect to handle initialization and reset of form data
   useEffect(() => {
     if (coupon) {
       setFormData({
@@ -45,62 +48,85 @@ const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
         isActive: true
       });
     }
+    // Clear any existing errors
     setErrors({});
   }, [coupon]);
 
+  // Validate form data before submission
   const validate = () => {
     const newErrors = {};
+    // Check required fields
     if (!formData.code) newErrors.code = 'Code is required';
     if (!formData.description) newErrors.description = 'Description is required';
     if (formData.discountValue <= 0) newErrors.discountValue = 'Discount value must be greater than 0';
+    // Ensure percentage discount is not over 100%
     if (formData.discountType === DISCOUNT_TYPE.PERCENTAGE && formData.discountValue > 100) {
       newErrors.discountValue = 'Percentage cannot be greater than 100';
     }
+    // Validate usage count if specified
     if (formData.maxUsageCount !== null && formData.maxUsageCount <= 0) {
       newErrors.maxUsageCount = 'Usage count must be greater than 0';
     }
-
+    
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0; // Return true if no errors
   };
 
+  // Handle form submission
   const handleSubmit = () => {
     if (validate()) {
-        const submitData = {
-            ...formData,
-            expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
-        };
-        
-        // If updating, only send the updateable fields
-        if (coupon) {
-            const updateData = {
-                description: submitData.description,
-                discountType: submitData.discountType,
-                discountValue: submitData.discountValue,
-                expiryDate: submitData.expiryDate,
-                allowMultipleDiscounts: submitData.allowMultipleDiscounts,
-                maxUsageCount: submitData.maxUsageCount,
-                isActive: submitData.isActive
-            };
-            onSave(updateData);
-        } else {
-            onSave(submitData);
-        }
-    }
-};
+      const submitData = {
+        ...formData,
+        // Convert Date object to ISO string for API
+        expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
+      };
 
+      if (coupon) {
+        // If editing, only send updatable fields
+        const updateData = {
+          description: submitData.description,
+          discountType: submitData.discountType,
+          discountValue: submitData.discountValue,
+          expiryDate: submitData.expiryDate,
+          allowMultipleDiscounts: submitData.allowMultipleDiscounts,
+          maxUsageCount: submitData.maxUsageCount,
+          isActive: submitData.isActive
+        };
+        //ADD SUCCESS FOR UPDATE/ADD MESSAGE
+        onSave(updateData);
+      } else {
+        // If creating new coupon, send all data
+        onSave(submitData);
+      }
+    }
+  };
+
+  // Handle input change events
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
     setFormData(prev => ({
       ...prev,
+      // Handle checkbox inputs differently than regular inputs
       [name]: e.target.hasOwnProperty('checked') ? checked : value
     }));
   };
 
+  // Dialog footer with action buttons
   const dialogFooter = (
-    <div>
-      <Button label="Cancel" icon="pi pi-times" severity="secondary" onClick={onHide} />
-      <Button label="Save" icon="pi pi-check" onClick={handleSubmit} autoFocus />
+    <div className="flex justify-end gap-3">
+      <Button
+        label="Cancel"
+        icon="pi pi-times"
+        severity="secondary"
+        onClick={onHide}
+        className="p-button-outlined transition-all duration-200 hover:scale-105 hover:shadow-md"
+      />
+      <Button
+        label="Save"
+        icon="pi pi-check"
+        onClick={handleSubmit}
+        className="p-button-primary transition-all duration-200 hover:scale-105 hover:shadow-md hover:brightness-110"
+      />
     </div>
   );
 
