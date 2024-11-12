@@ -1,17 +1,21 @@
-// src/features/auth/authContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../../../services/authService';
 
+// Create the authentication context
 const AuthContext = createContext(null);
 
+// AuthProvider component
 export const AuthProvider = ({ children }) => {
+  // State variables for user and loading status
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Check authentication status on component mount
   useEffect(() => {
     checkAuth();
   }, []);
 
+  // Function to check authentication status
   const checkAuth = () => {
     try {
       const currentUser = authService.getCurrentUser();
@@ -23,6 +27,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to handle user login
   const login = async (username, password) => {
     try {
       const response = await authService.login(username, password);
@@ -34,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to handle user logout
   const logout = () => {
     try {
       authService.logout();
@@ -45,6 +51,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to create a new user
   const createUser = async (userData) => {
     try {
       console.log('Creating user with data:', userData);
@@ -60,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Value object provided by the AuthContext
   const value = {
     user,
     loading,
@@ -69,9 +77,11 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: Boolean(user),
   };
 
+  // Render the AuthContext Provider with the value and child components
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// Custom hook to access the AuthContext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

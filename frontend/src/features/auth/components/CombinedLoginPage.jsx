@@ -13,21 +13,12 @@ import { Ripple } from 'primereact/ripple';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './authContext';
 import LoadingSpinner from '../../design/LoadingSpinner';
-
-const ORIGINAL_AMOUNT = 100; // Fixed amount for demonstration
-
-
 // Import Lucide icons
-import { 
-  ShieldCheck, 
-  Tag, 
-  Lock,
-  User,
-  Mail,
-  DollarSign,
-  Package,
-  CreditCard
-} from 'lucide-react';
+import { ShieldCheck, Tag, Lock, User, Mail, DollarSign, Package, CreditCard} from 'lucide-react';
+
+const ORIGINAL_AMOUNT = 100; // Fixed amount
+
+
 
 const LoginPage = () => {
   
@@ -101,88 +92,88 @@ const LoginPage = () => {
     }
   };
 
-// Handle coupon validation
-const validateCoupon = async () => {
-  if (!couponCode.trim()) {
-    messages.current?.show({
-      severity: 'warn',
-      summary: 'Warning',
-      detail: 'Please enter a coupon code',
-      life: 3000
-    });
-    return;
-  }
-
-  // Check for duplicate coupons
-  if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
-    messages.current?.show({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'This coupon has already been applied',
-      life: 3000
-    });
-    return;
-  }
-
-  setCouponLoading(true);
-  try {
-    const response = await fetch('http://localhost:5190/api/coupons/validate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        code: couponCode,
-        orderAmount: currentTotal,
-        previouslyAppliedCoupons: appliedCoupons.map(c => c.code)
-      })
-    });
-
-    const result = await response.json();
-    console.log('Validation response:', result);
-
-    if (response.ok && result.isValid) {
-      // Add to applied coupons
-      const newCoupon = {
-        code: couponCode,
-        discountAmount: result.discountAmount,
-        finalAmount: result.finalAmount,
-        discountType: result.discountType,
-        discountValue: result.discountValue
-      };
-
-      setAppliedCoupons(prev => [...prev, newCoupon]);
-      setCurrentTotal(result.finalAmount);
-      setValidationResult(result);
-      setShowResult(true);
-      setCouponCode('');
-
+  // Handle coupon validation
+  const validateCoupon = async () => {
+    if (!couponCode.trim()) {
       messages.current?.show({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter a coupon code',
         life: 3000
       });
-    } else {
+      return;
+    }
+
+    // Check for duplicate coupons
+    if (appliedCoupons.some(coupon => coupon.code === couponCode)) {
       messages.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: result.message || 'Invalid coupon code',
+        detail: 'This coupon has already been applied',
         life: 3000
       });
+      return;
     }
-  } catch (error) {
-    console.error('Coupon validation error:', error);
-    messages.current?.show({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to validate coupon',
-      life: 3000
-    });
-  } finally {
-    setCouponLoading(false);
-  }
-};
+
+    setCouponLoading(true);
+    try {
+      const response = await fetch('http://localhost:5190/api/coupons/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: couponCode,
+          orderAmount: currentTotal,
+          previouslyAppliedCoupons: appliedCoupons.map(c => c.code)
+        })
+      });
+
+      const result = await response.json();
+      console.log('Validation response:', result);
+
+      if (response.ok && result.isValid) {
+        // Add to applied coupons
+        const newCoupon = {
+          code: couponCode,
+          discountAmount: result.discountAmount,
+          finalAmount: result.finalAmount,
+          discountType: result.discountType,
+          discountValue: result.discountValue
+        };
+
+        setAppliedCoupons(prev => [...prev, newCoupon]);
+        setCurrentTotal(result.finalAmount);
+        setValidationResult(result);
+        setShowResult(true);
+        setCouponCode('');
+
+        messages.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Coupon applied! Saved ${formatCurrency(result.discountAmount)}`,
+          life: 3000
+        });
+      } else {
+        messages.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: result.message || 'Invalid coupon code',
+          life: 3000
+        });
+      }
+    } catch (error) {
+      console.error('Coupon validation error:', error);
+      messages.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to validate coupon',
+        life: 3000
+      });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
 // Remove coupon function
 const removeCoupon = async (couponToRemove) => {
