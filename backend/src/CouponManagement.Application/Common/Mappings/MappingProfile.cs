@@ -11,12 +11,24 @@ namespace CouponManagement.Application.Common.Mappings
         {
             // User mapping
             CreateMap<User, UserDto>();
-                
 
-            // Coupon mapping
+            // Coupon to CouponDto mapping
             CreateMap<Coupon, CouponDto>()
                 .ForMember(dest => dest.CreatedByUsername, 
-                    opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.Username : string.Empty));
+                    opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.Username : string.Empty))
+                .ForMember(dest => dest.DiscountType,
+                    opt => opt.MapFrom(src => src.DiscountType.ToString()));
+
+            // CreateCouponRequest to Coupon mapping
+            CreateMap<CreateCouponRequest, Coupon>()
+                .ForMember(dest => dest.DiscountType,
+                    opt => opt.MapFrom(src => ParseDiscountType(src.DiscountType)));
+
+            // UpdateCouponRequest to Coupon mapping
+            CreateMap<UpdateCouponRequest, Coupon>()
+                .ForMember(dest => dest.DiscountType,
+                    opt => opt.MapFrom(src => ParseDiscountType(src.DiscountType)))
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Coupon Report mapping
             CreateMap<Coupon, CouponReportDto>()
@@ -26,6 +38,15 @@ namespace CouponManagement.Application.Common.Mappings
                     opt => opt.MapFrom(src => src.DiscountType.ToString()))
                 .ForMember(dest => dest.Status, 
                     opt => opt.MapFrom(src => GetCouponStatus(src)));
+        }
+
+        private DiscountType ParseDiscountType(string discountType)
+        {
+            if (Enum.TryParse<DiscountType>(discountType, out var result))
+            {
+                return result;
+            }
+            throw new ArgumentException($"Invalid discount type: {discountType}");
         }
 
         private string GetCouponStatus(Coupon coupon)

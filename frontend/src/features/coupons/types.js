@@ -1,4 +1,4 @@
 export const DISCOUNT_TYPE = {
-    PERCENTAGE: 'PERCENTAGE',
-    FIXED_AMOUNT: 'FIXED_AMOUNT'
-  };
+  PERCENTAGE: 'Percentage',
+  FIXED_AMOUNT: 'FixedAmount'
+};

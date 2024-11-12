@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace CouponManagement.Domain.Entities
 {
@@ -12,6 +13,7 @@ namespace CouponManagement.Domain.Entities
         public decimal DiscountValue { get; set; }
         public int CreatedById { get; set; }
         public virtual User CreatedBy { get; set; } = null!;
+        
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? ExpiryDate { get; set; }
@@ -21,6 +23,7 @@ namespace CouponManagement.Domain.Entities
         public bool IsActive { get; set; }
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DiscountType
     {
         Percentage,

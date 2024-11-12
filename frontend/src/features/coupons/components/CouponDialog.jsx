@@ -10,8 +10,8 @@ import { Checkbox } from 'primereact/checkbox';
 import { DISCOUNT_TYPE } from '../types';
 
 const discountTypes = [
-  { label: 'Percentage', value: DISCOUNT_TYPE.PERCENTAGE },
-  { label: 'Fixed Amount', value: DISCOUNT_TYPE.FIXED_AMOUNT }
+  { label: 'Percentage', value: 'Percentage' },
+  { label: 'Fixed Amount', value: 'FixedAmount' }
 ];
 
 const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
@@ -66,12 +66,28 @@ const CouponDialog = ({ visible, onHide, onSave, coupon }) => {
 
   const handleSubmit = () => {
     if (validate()) {
-      onSave({
-        ...formData,
-        expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
-      });
+        const submitData = {
+            ...formData,
+            expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
+        };
+        
+        // If updating, only send the updateable fields
+        if (coupon) {
+            const updateData = {
+                description: submitData.description,
+                discountType: submitData.discountType,
+                discountValue: submitData.discountValue,
+                expiryDate: submitData.expiryDate,
+                allowMultipleDiscounts: submitData.allowMultipleDiscounts,
+                maxUsageCount: submitData.maxUsageCount,
+                isActive: submitData.isActive
+            };
+            onSave(updateData);
+        } else {
+            onSave(submitData);
+        }
     }
-  };
+};
 
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
