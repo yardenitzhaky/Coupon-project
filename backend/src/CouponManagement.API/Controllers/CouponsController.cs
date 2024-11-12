@@ -1,4 +1,3 @@
-// src/CouponManagement.API/Controllers/CouponsController.cs
 using Microsoft.AspNetCore.Mvc;
 using CouponManagement.Application.DTOs;
 using CouponManagement.Application.Services;
@@ -12,13 +11,14 @@ namespace CouponManagement.API.Controllers
         private readonly ICouponService _couponService;
         private readonly ILogger<CouponsController> _logger;
 
-
+        // Constructor to initialize the CouponService and Logger
         public CouponsController(ICouponService couponService, ILogger<CouponsController> logger)
         {
             _couponService = couponService;
             _logger = logger;
         }
 
+        // Endpoint to get all coupons
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CouponDto>>> GetCoupons()
         {
@@ -26,6 +26,7 @@ namespace CouponManagement.API.Controllers
             return Ok(coupons);
         }
 
+        // Endpoint to get a specific coupon by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<CouponDto>> GetCoupon(int id)
         {
@@ -37,6 +38,7 @@ namespace CouponManagement.API.Controllers
             return Ok(coupon);
         }
 
+        // Endpoint to create a new coupon
         [HttpPost]
         public async Task<ActionResult<CouponDto>> CreateCoupon(CreateCouponRequest request)
         {
@@ -53,6 +55,7 @@ namespace CouponManagement.API.Controllers
             }
         }
 
+        // Endpoint to update an existing coupon
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCoupon(int id, UpdateCouponRequest request)
         {
@@ -67,6 +70,7 @@ namespace CouponManagement.API.Controllers
             }
         }
 
+        // Endpoint to delete a coupon by ID
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoupon(int id)
         {
@@ -81,7 +85,8 @@ namespace CouponManagement.API.Controllers
             }
         }
 
-                [HttpPost("validate")]
+        // Endpoint to validate a single coupon
+        [HttpPost("validate")]
         public async Task<ActionResult<CouponValidationResult>> ValidateCoupon(
             [FromBody] CouponValidationRequest request)
         {
@@ -101,6 +106,7 @@ namespace CouponManagement.API.Controllers
             }
         }
 
+        // Endpoint to validate multiple coupons
         [HttpPost("validate-multiple")]
         public async Task<ActionResult<MultiCouponValidationResult>> ValidateMultipleCoupons(
             [FromBody] MultiCouponValidationRequest request)
@@ -120,6 +126,7 @@ namespace CouponManagement.API.Controllers
             }
         }
 
+        // Endpoint to check if multiple coupons can be combined
         [HttpPost("can-combine")]
         public async Task<ActionResult<bool>> CanCombineCoupons([FromBody] List<string> couponCodes)
         {
@@ -136,6 +143,7 @@ namespace CouponManagement.API.Controllers
         }
     }
 
+    // DTO for validating a single coupon
     public class ValidateCouponRequest
     {
         public string Code { get; set; } = string.Empty;

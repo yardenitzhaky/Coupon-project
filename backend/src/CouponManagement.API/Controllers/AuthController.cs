@@ -12,12 +12,14 @@ namespace CouponManagement.API.Controllers
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
 
+        // Constructor to initialize the AuthService and Logger
         public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
             _logger = logger;
         }
 
+        // Endpoint for user registration
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -25,6 +27,7 @@ namespace CouponManagement.API.Controllers
             {
                 _logger.LogInformation($"Registration attempt for username: {request.Username}");
 
+                // Validate the request model
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState
@@ -54,6 +57,7 @@ namespace CouponManagement.API.Controllers
             }
         }
 
+        // Endpoint for user login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {

@@ -41,26 +41,17 @@ api.interceptors.response.use(
 // Export the configured axios instance
 export default api;
 
-// Export type definitions for endpoints
-export const API_ENDPOINTS = {
-  auth: {
-    login: '/auth/login',
-    logout: '/auth/logout',
-    register: '/auth/register'
-  },
-  coupons: {
-    base: '/coupons',
-    validate: '/coupons/validate',
-    validateMultiple: '/coupons/validate-multiple',
-    canCombine: '/coupons/can-combine'
-  },
-  reports: {
-    couponsByUser: (userId) => `/reports/coupons/by-user/${userId}`,
-    couponsByDate: '/reports/coupons/by-date',
-    export: '/reports/coupons/export',
-    users: '/reports/users'
-  },
-  customer: {
-    validateCoupons: '/customer/validate-coupons'
-  }
+export const couponsApi = {
+  getAll: () => api.get('/coupons'),
+  getById: (id) => api.get(`/coupons/${id}`),
+  create: (data) => api.post('/coupons', data),
+  update: (id, data) => api.put(`/coupons/${id}`, data),
+  delete: (id) => api.delete(`/coupons/${id}`),
+};
+
+export const reportsApi = {
+  getCouponsByUser: (userId) => api.get(API_ENDPOINTS.reports.couponsByUser(userId)),
+  getCouponsByDateRange: (startDate, endDate) => api.get(API_ENDPOINTS.reports.couponsByDate, { params: { startDate, endDate } }),
+  exportCoupons: (filters) => api.post(API_ENDPOINTS.reports.export, filters, { responseType: 'blob' }),
+  getUsers: () => api.get(API_ENDPOINTS.reports.users),
 };

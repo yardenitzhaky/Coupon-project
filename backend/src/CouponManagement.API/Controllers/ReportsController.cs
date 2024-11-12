@@ -14,6 +14,7 @@ namespace CouponManagement.API.Controllers
         private readonly IReportService _reportService;
         private readonly ILogger<ReportsController> _logger;
 
+        // Constructor to initialize the ReportService and Logger
         public ReportsController(IReportService reportService, ILogger<ReportsController> logger)
         {
             _reportService = reportService;
