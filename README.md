@@ -54,7 +54,6 @@ CouponGuard is a full-stack coupon management system built with React, .NET , an
 ## 💾 Database Structure
 
 ### Users Table
-- Stores admin/user authentication details
 - Fields:
   - `Id`: Auto-incrementing primary key
   - `Username`: Unique identifier (max 50 chars)
@@ -91,7 +90,7 @@ CouponGuard is a full-stack coupon management system built with React, .NET , an
 ### Quick Start Guide
 Clone the repository:
 ```bash
-git clone https://github.com/yourusername/couponguard.git
+git clone https://github.com/yardenitzhaky/couponguard.git
 ```
 
 
