@@ -55,9 +55,21 @@ const LoginPage = () => {
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 }
+  // const itemVariants = {
+  //   hidden: { opacity: 0, x: -20 },
+  //   visible: { opacity: 1, x: 0 }
+  // };
+
+  const tabContentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
   };
 
 
@@ -259,7 +271,12 @@ const LoginPage = () => {
               </div>
             }
           >
-            <motion.div variants={itemVariants} className="p-6 space-y-6">
+             <motion.div
+              variants={tabContentVariants}
+              initial="hidden"
+              animate="visible"
+             className="p-6 space-y-6"
+             >
               <div className="text-center">
                 <Package className="w-16 h-16 mx-auto text-blue-500" />
                 <h2 className="text-2xl font-bold mt-4">
@@ -294,65 +311,73 @@ const LoginPage = () => {
                 </div>
 
                 {/* Applied Coupons List */}
-                <AnimatePresence>
-                  {appliedCoupons.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="space-y-3"
-                    >
-                      <h3 className="font-semibold">Applied Coupons:</h3>
-                      {appliedCoupons.map((coupon) => (
-                        <motion.div
-                          key={coupon.code}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                          className="flex justify-between items-center p-3 bg-blue-50 rounded-lg transition-all duration-200 hover:bg-blue-100 hover:shadow-md"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Tag value={coupon.code} severity="info" />
-                            <span className="text-green-600 font-medium">
-                              -{formatCurrency(coupon.discountAmount)}
-                            </span>
-                          </div>
-
-                          <Button
-                            icon="pi pi-times"
-                            rounded
-                            text
-                            severity="danger"
-                            onClick={() => removeCoupon(coupon)}
-                            disabled={couponLoading}
-                            className="transition-all duration-200 hover:scale-110"
-                          />
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Current Total Display */}
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold">Current Total:</span>
+                  <AnimatePresence>
+                    {appliedCoupons.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="space-y-3"
+                      >
+                        <h3 className="font-semibold">Applied Coupons:</h3>
+                        {appliedCoupons.map((coupon) => (
+                          <motion.div
+                            key={coupon.code}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="flex justify-between items-center p-3 bg-blue-50 rounded-lg transition-all duration-200 hover:bg-blue-100 hover:shadow-md"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Tag value={coupon.code} severity="info" />
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 font-medium">
+                                  -{formatCurrency(coupon.discountAmount)}
+                                </span>
+                                <span className="text-gray-500">
+                                  ({coupon.code})
+                                </span>
+                              </div>
+                            </div>
+                            <Button
+                              icon="pi pi-times"
+                              rounded
+                              text
+                              severity="danger"
+                              onClick={() => removeCoupon(coupon)}
+                              disabled={couponLoading}
+                              className="transition-all duration-200 hover:scale-110"
+                            />
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  {/* Current Total Display */}
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">Current Total:</span>
                       <span className="text-2xl font-bold text-blue-600">
                         {formatCurrency(currentTotal)}
                       </span>
-                  </div>
-                  {appliedCoupons.length > 0 && (
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="text-sm text-gray-600">Total Savings:</span>
-                        <span className="text-green-600">
-                          -{formatCurrency(ORIGINAL_AMOUNT - currentTotal)}
-                        </span>
                     </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </TabPanel>
+                    {appliedCoupons.length > 0 && (
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-sm text-gray-600">Total Savings:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-600">
+                            -{formatCurrency(ORIGINAL_AMOUNT - currentTotal)}
+                          </span>
+                          <span className="text-gray-500">
+                            ({appliedCoupons.map(coupon => coupon.code).join(', ')})
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  </div>
+                  </motion.div>
+                  </TabPanel>
 
           {/* Admin Login Tab */}
           <TabPanel
@@ -363,7 +388,13 @@ const LoginPage = () => {
               </div>
             }
           >
-            <motion.div variants={itemVariants} className="p-6">
+            <motion.div
+              variants={tabContentVariants}
+              initial="hidden"
+              animate="visible"
+              className="p-6"
+            >
+
               <div className="text-center mb-6">
                 <ShieldCheck className="w-16 h-16 mx-auto text-blue-500" />
                 <h2 className="text-2xl font-bold mt-4">Welcome Back</h2>
