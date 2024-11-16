@@ -54,7 +54,6 @@ CouponGuard is a full-stack coupon management system built with React, .NET , an
 ## 💾 Database Structure
 
 ### Users Table
-- Stores admin/user authentication details
 - Fields:
   - `Id`: Auto-incrementing primary key
   - `Username`: Unique identifier (max 50 chars)
@@ -91,7 +90,7 @@ CouponGuard is a full-stack coupon management system built with React, .NET , an
 ### Quick Start Guide
 Clone the repository:
 ```bash
-git clone https://github.com/yourusername/couponguard.git
+git clone https://github.com/yardenitzhaky/Coupon-project.git
 ```
 
 
@@ -148,6 +147,56 @@ CREATE TABLE CouponUsageHistory (
     DiscountAmount DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (CouponId) REFERENCES Coupons(Id)
 );
+
+-- Insert admin users (passwords are hashed using BCrypt)
+-- Password for all users is '123456'
+INSERT INTO Users (Username, Password, CreatedAt, IsActive)
+VALUES 
+    ('admin', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('john.doe', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('sarah.smith', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('mike.wilson', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE);
+
+-- Insert active coupons with various discount types and conditions
+INSERT INTO Coupons (
+    Code, 
+    Description, 
+    DiscountType, 
+    DiscountValue, 
+    CreatedById, 
+    CreatedAt, 
+    ExpiryDate, 
+    AllowMultipleDiscounts, 
+    MaxUsageCount, 
+    CurrentUsageCount, 
+    IsActive
+)
+VALUES
+    -- Percentage discount coupons
+    ('WELCOME25', 'Welcome discount 25% off', 'Percentage', 25.00, 1, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), FALSE, 100, 0, TRUE),
+    ('SUMMER50', 'Summer sale 50% discount', 'Percentage', 50.00, 1, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), FALSE, 50, 0, TRUE),
+    ('FLASH15', 'Flash sale 15% off', 'Percentage', 15.00, 2, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), TRUE, NULL, 0, TRUE),
+
+    -- Fixed amount discount coupons
+    ('SAVE50', '₪50 off your purchase', 'FixedAmount', 50.00, 1, NOW(), DATE_ADD(NOW(), INTERVAL 14 DAY), TRUE, NULL, 0, TRUE),
+    ('DISC100', '₪100 discount on orders', 'FixedAmount', 100.00, 2, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), FALSE, 25, 0, TRUE),
+    ('BONUS20', '₪20 off any order', 'FixedAmount', 20.00, 3, NOW(), NULL, TRUE, NULL, 0, TRUE),
+
+    -- Special event coupons
+    ('BFRIDAY30', 'Black Friday 30% off', 'Percentage', 30.00, 1, NOW(), DATE_ADD(NOW(), INTERVAL 90 DAY), FALSE, 200, 0, TRUE),
+    ('HOLIDAY100', 'Holiday season ₪100 off', 'FixedAmount', 100.00, 2, NOW(), DATE_ADD(NOW(), INTERVAL 60 DAY), FALSE, 150, 0, TRUE),
+
+    -- Limited usage coupons
+    ('VIP40', 'VIP member 40% discount', 'Percentage', 40.00, 1, NOW(), NULL, FALSE, 10, 5, TRUE),
+    ('EXCLUSIVE75', '₪75 off exclusive offer', 'FixedAmount', 75.00, 3, NOW(), DATE_ADD(NOW(), INTERVAL 5 DAY), FALSE, 20, 15, TRUE),
+
+    -- Expired coupons (for testing)
+    ('EXPIRED50', 'Expired 50% off coupon', 'Percentage', 50.00, 1, NOW(), DATE_SUB(NOW(), INTERVAL 1 DAY), FALSE, NULL, 0, FALSE),
+    ('PASTCODE', 'Past promotion ₪30 off', 'FixedAmount', 30.00, 2, NOW(), DATE_SUB(NOW(), INTERVAL 7 DAY), FALSE, NULL, 0, FALSE),
+
+    -- Maxed out coupon (for testing)
+    ('MAXED25', '25% off limited offer', 'Percentage', 25.00, 1, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), FALSE, 5, 5, TRUE);
+
 ```
 
 ### Backend Setup
