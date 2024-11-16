@@ -1,4 +1,4 @@
-// src/services/couponService.js
+import api from './api';
 import { couponsApi } from './api';
 
 class CouponService {
@@ -78,15 +78,15 @@ class CouponService {
     }
   }
 
-  // Validate multiple coupons using customer API
-  async validateMultipleCoupons(coupons, orderAmount) {
-    try {
-      const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
-      return validationResult;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to validate coupons');
-    }
-  }
+  // // Validate multiple coupons using customer API
+  // async validateMultipleCoupons(coupons, orderAmount) {
+  //   try {
+  //     const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
+  //     return validationResult;
+  //   } catch (error) {
+  //     throw new Error(error.response?.data?.message || 'Failed to validate coupons');
+  //   }
+  // }
 
   // Check if coupons can be combined
   async canCombineCoupons(couponCodes) {
