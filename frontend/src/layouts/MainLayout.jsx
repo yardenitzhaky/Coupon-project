@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 
+// PublicHeader component for the header section of the layout
 const PublicHeader = () => (
   <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
     <div className="container mx-auto flex justify-between items-center">
@@ -14,6 +15,7 @@ const PublicHeader = () => (
   </div>
 );
 
+// Footer component for the footer section of the layout
 export const Footer = () => (
   <div className="bg-gray-800 text-white p-4 fixed bottom-0 w-full z-50">
     <div className="container mx-auto text-center">
@@ -36,13 +38,17 @@ export const Footer = () => (
   </div>
 );
 
+// MainLayout component that includes the header, main content, and footer
 export const MainLayout = () => {
   return (
     <div className="flex flex-col min-h-screen relative">
+      {/* Render the PublicHeader component */}
       <PublicHeader />
       <main className="flex-grow mb-24"> 
+        {/* Render the child routes/components */}
         <Outlet />
       </main>
+      {/* Render the Footer component */}
       <Footer />
     </div>
   );

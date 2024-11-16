@@ -18,6 +18,7 @@ namespace CouponManagement.Application.Services
         private readonly IMapper _mapper;
         private readonly ILogger<ReportService> _logger;
 
+        // Constructor to initialize dependencies
         public ReportService(
             ICouponRepository couponRepository,
             IUserRepository userRepository,
@@ -30,6 +31,7 @@ namespace CouponManagement.Application.Services
             _logger = logger;
         }
 
+        // Retrieves all users and maps them to UserDto
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             try
@@ -44,6 +46,7 @@ namespace CouponManagement.Application.Services
             }
         }
 
+        // Retrieves coupons by user ID and maps them to CouponReportDto
         public async Task<IEnumerable<CouponReportDto>> GetCouponsByUserAsync(int userId)
         {
             try
@@ -58,6 +61,7 @@ namespace CouponManagement.Application.Services
             }
         }
 
+        // Retrieves coupons by date range and maps them to CouponReportDto
         public async Task<IEnumerable<CouponReportDto>> GetCouponsByDateRangeAsync(
             DateTime startDate,
             DateTime endDate)
@@ -74,6 +78,7 @@ namespace CouponManagement.Application.Services
             }
         }
 
+        // Exports coupons to an Excel file
         public async Task<byte[]> ExportCouponsToExcelAsync(
             DateTime? startDate,
             DateTime? endDate,
@@ -132,6 +137,7 @@ namespace CouponManagement.Application.Services
             }
         }
 
+        // Retrieves coupon statistics
         public async Task<IDictionary<string, object>> GetCouponStatisticsAsync(
             DateTime? startDate,
             DateTime? endDate,
@@ -148,16 +154,19 @@ namespace CouponManagement.Application.Services
             }
         }
 
-   private string GetCouponStatus(CouponManagement.Domain.Entities.Coupon coupon)
-{
-    if (!coupon.IsActive)
-        return "Inactive";
-    if (coupon.ExpiryDate.HasValue && coupon.ExpiryDate < DateTime.UtcNow)
-        return "Expired";
-    if (coupon.MaxUsageCount.HasValue && coupon.CurrentUsageCount >= coupon.MaxUsageCount.Value)
-        return "MaxedOut";
-    return "Active";
-}
+        // Determines the status of a coupon
+        private string GetCouponStatus(CouponManagement.Domain.Entities.Coupon coupon)
+        {
+            if (!coupon.IsActive)
+                return "Inactive";
+            if (coupon.ExpiryDate.HasValue && coupon.ExpiryDate < DateTime.UtcNow)
+                return "Expired";
+            if (coupon.MaxUsageCount.HasValue && coupon.CurrentUsageCount >= coupon.MaxUsageCount.Value)
+                return "MaxedOut";
+            return "Active";
+        }
+
+        // Retrieves coupons for report based on filters
         public async Task<IEnumerable<Coupon>> GetCouponsForReportAsync(
             DateTime? startDate, 
             DateTime? endDate, 

@@ -2,6 +2,7 @@
 import { couponsApi } from './api';
 
 class CouponService {
+  // Fetch all coupons
   async getAllCoupons() {
     try {
       const coupons = await couponsApi.getAll();
@@ -11,6 +12,7 @@ class CouponService {
     }
   }
 
+  // Fetch a coupon by its ID
   async getCouponById(id) {
     try {
       const coupon = await couponsApi.getById(id);
@@ -20,6 +22,7 @@ class CouponService {
     }
   }
 
+  // Create a new coupon
   async createCoupon(couponData) {
     try {
       const createdCoupon = await couponsApi.create(couponData);
@@ -29,6 +32,7 @@ class CouponService {
     }
   }
 
+  // Update an existing coupon
   async updateCoupon(id, couponData) {
     try {
       const updatedCoupon = await couponsApi.update(id, couponData);
@@ -38,6 +42,7 @@ class CouponService {
     }
   }
 
+  // Delete a coupon by its ID
   async deleteCoupon(id) {
     try {
       await couponsApi.delete(id);
@@ -46,8 +51,8 @@ class CouponService {
     }
   }
 
-   // Validate a single coupon
-   async validateCoupon(code, orderAmount, previouslyAppliedCoupons = []) {
+  // Validate a single coupon
+  async validateCoupon(code, orderAmount, previouslyAppliedCoupons = []) {
     try {
       const response = await api.post('/coupons/validate', {
         code,
@@ -60,9 +65,8 @@ class CouponService {
     }
   }
 
-
-   // Validate multiple coupons at once
-   async validateMultipleCoupons(couponCodes, orderAmount) {
+  // Validate multiple coupons at once
+  async validateMultipleCoupons(couponCodes, orderAmount) {
     try {
       const response = await api.post('/coupons/validate-multiple', {
         couponCodes,
@@ -72,7 +76,9 @@ class CouponService {
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to validate coupons');
     }
-  } 
+  }
+
+  // Validate multiple coupons using customer API
   async validateMultipleCoupons(coupons, orderAmount) {
     try {
       const validationResult = await customerApi.validateCoupons(coupons, orderAmount);
@@ -81,15 +87,16 @@ class CouponService {
       throw new Error(error.response?.data?.message || 'Failed to validate coupons');
     }
   }
-    // Check if coupons can be combined
-    async canCombineCoupons(couponCodes) {
-      try {
-        const response = await api.post('/coupons/can-combine', couponCodes);
-        return response.data;
-      } catch (error) {
-        throw new Error(error.response?.data?.message || 'Failed to check coupon compatibility');
-      }
+
+  // Check if coupons can be combined
+  async canCombineCoupons(couponCodes) {
+    try {
+      const response = await api.post('/coupons/can-combine', couponCodes);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to check coupon compatibility');
     }
+  }
 }
 
 export default new CouponService();

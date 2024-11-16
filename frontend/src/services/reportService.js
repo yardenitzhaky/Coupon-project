@@ -4,6 +4,7 @@ import authService from './authService';
 
 class ReportService {
   constructor() {
+    // Method to check if the user is authenticated
     this.checkAuth = () => {
       if (!authService.isAuthenticated()) {
         throw new Error('User is not authenticated');
@@ -11,16 +12,18 @@ class ReportService {
     };
   }
 
+  // Fetch coupons by user ID
   async getCouponsByUser(userId) {
     try {
-        const response = await api.get(`/reports/coupons/by-user/${userId}`);
-        return response.data;
+      const response = await api.get(`/reports/coupons/by-user/${userId}`);
+      return response.data;
     } catch (error) {
-        console.error('Error fetching coupons by user:', error);
-        throw new Error(error.response?.data?.message || 'Failed to fetch coupons by user');
+      console.error('Error fetching coupons by user:', error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch coupons by user');
     }
-}
+  }
 
+  // Fetch coupons within a specific date range
   async getCouponsByDateRange(startDate, endDate) {
     this.checkAuth();
     try {
@@ -31,6 +34,7 @@ class ReportService {
     }
   }
 
+  // Export coupons based on filters
   async exportCoupons(filters) {
     this.checkAuth();
     try {
@@ -42,6 +46,7 @@ class ReportService {
     }
   }
 
+  // Fetch all users
   async getUsers() {
     this.checkAuth();
     try {
@@ -56,6 +61,7 @@ class ReportService {
     }
   }
 
+  // Helper method to download an Excel file
   downloadExcelFile(blob) {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

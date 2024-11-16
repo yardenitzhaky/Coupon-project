@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 const API_URL = 'http://localhost:5190/api';
 
 class AuthService {
+  // Method to handle user login
   async login(username, password) {
     try {
         console.log('Attempting login with:', { username, password });
@@ -49,13 +50,15 @@ class AuthService {
         console.error('Login error:', error);
         throw error;
     }
-}
+  }
 
+  // Method to handle user logout
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   }
 
+  // Method to get the current logged-in user
   getCurrentUser() {
     try {
       const token = localStorage.getItem('token');
@@ -79,6 +82,7 @@ class AuthService {
     }
   }
 
+  // Method to create a new user
   async createUser(userData) {
     try {
       console.log('Attempting to create user with data:', userData);
@@ -129,6 +133,7 @@ class AuthService {
     }
   }
 
+  // Method to check if the user is authenticated
   isAuthenticated() {
     const token = localStorage.getItem('token');
     if (!token) return false;
@@ -142,6 +147,7 @@ class AuthService {
     }
   }
 
+  // Method to get the authorization header
   getAuthHeader() {
     const token = localStorage.getItem('token');
     return token ? { Authorization: `Bearer ${token}` } : {};
