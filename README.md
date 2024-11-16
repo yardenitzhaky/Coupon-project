@@ -90,7 +90,7 @@ CouponGuard is a full-stack coupon management system built with React, .NET , an
 ### Quick Start Guide
 Clone the repository:
 ```bash
-git clone https://github.com/yardenitzhaky/couponguard.git
+git clone https://github.com/yardenitzhaky/Coupon-project.git
 ```
 
 
