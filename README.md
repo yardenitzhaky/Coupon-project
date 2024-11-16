@@ -149,13 +149,13 @@ CREATE TABLE CouponUsageHistory (
 );
 
 -- Insert admin users (passwords are hashed using BCrypt)
--- Password for all users is 'Admin123!'
+-- Password for all users is '123456'
 INSERT INTO Users (Username, Password, CreatedAt, IsActive)
 VALUES 
-    ('admin', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpfQN2YIpjR5Bei', NOW(), TRUE),
-    ('john.doe', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpfQN2YIpjR5Bei', NOW(), TRUE),
-    ('sarah.smith', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpfQN2YIpjR5Bei', NOW(), TRUE),
-    ('mike.wilson', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpfQN2YIpjR5Bei', NOW(), TRUE);
+    ('admin', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('john.doe', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('sarah.smith', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE),
+    ('mike.wilson', '$2y$12$3eWYein.OXJiZRdAyE123.ejaJkug1udJbxYjvNdR3gZhnj8pZYGm', NOW(), TRUE);
 
 -- Insert active coupons with various discount types and conditions
 INSERT INTO Coupons (
