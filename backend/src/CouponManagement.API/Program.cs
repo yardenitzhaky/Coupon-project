@@ -10,8 +10,10 @@ using CouponManagement.Application.Common.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add controllers to the services collection
 builder.Services.AddControllers();
 
+// Configure CORS to allow requests from the React app
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -25,8 +27,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-
-// Configure DbContext
+// Configure DbContext with MySQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
@@ -35,6 +36,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     )
 );
 
+// Configure JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -52,43 +54,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Register repositories
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
-
-// Register services
-builder.Services.AddScoped<ICouponService, CouponService>();
-
-// Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Register services
+builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Update the AutoMapper registration:
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
 builder.Services.AddScoped<IReportService, ReportService>();
 
-// Add API documentation
+// Register AutoMapper with the application's mapping profile
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+// Add API documentation using Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+// Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-
 var app = builder.Build();
 
+// Configure middleware
 app.UseRouting();
-
 app.UseCors("AllowReactApp");
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map controller routes
 app.MapControllers();
 
+// Run the application
 app.Run();

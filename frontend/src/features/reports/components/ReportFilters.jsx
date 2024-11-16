@@ -70,7 +70,7 @@ const handleUserChange = (e) => {
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 max-w-4xl mx-auto w-full">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="w-full md:w-auto">
           <label htmlFor="dateRange" className="block text-sm font-medium text-gray-700 mb-1">
@@ -90,7 +90,7 @@ const handleUserChange = (e) => {
           />
         </div>
 
-        {/* <div className="w-full md:w-auto">
+        <div className="w-full md:w-auto">
           <label htmlFor="user" className="block text-sm font-medium text-gray-700 mb-1">
             Select Admin
           </label>
@@ -104,7 +104,7 @@ const handleUserChange = (e) => {
             className="w-full"
             loading={loadingUsers}
           />
-        </div> */}
+        </div>
 
         <div className="flex items-end">
           <Button
@@ -113,8 +113,10 @@ const handleUserChange = (e) => {
             onClick={handleExport}
             loading={loading}
             disabled={(!dateRange[0] || !dateRange[1])}
-            className="w-full md:w-auto p-button-success p-button-rounded p-button-outlined"
-            />
+            severity="success"
+            size="large"
+            className="p-button-raised hover:scale-105 transition-transform duration-200 shadow-md"
+          />
         </div>
       </div>
     </Card>

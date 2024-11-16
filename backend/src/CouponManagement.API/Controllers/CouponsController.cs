@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CouponManagement.Application.DTOs;
 using CouponManagement.Application.Services;
+using System.Security.Claims;
 
 namespace CouponManagement.API.Controllers
 {
@@ -40,20 +41,27 @@ namespace CouponManagement.API.Controllers
 
         // Endpoint to create a new coupon
         [HttpPost]
-        public async Task<ActionResult<CouponDto>> CreateCoupon(CreateCouponRequest request)
+         public async Task<ActionResult<CouponDto>> CreateCoupon(CreateCouponRequest request)
+    {
+        try
         {
-            try
+            // Get the user ID from the JWT token claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
             {
-                // TODO: Get actual user ID from auth context
-                var userId = 1; // Temporary default user ID
-                var coupon = await _couponService.CreateCouponAsync(request, userId);
-                return CreatedAtAction(nameof(GetCoupon), new { id = coupon.Id }, coupon);
+                return Unauthorized(new { message = "User ID not found in token" });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var userId = int.Parse(userIdClaim.Value);
+            var coupon = await _couponService.CreateCouponAsync(request, userId);
+            return CreatedAtAction(nameof(GetCoupon), new { id = coupon.Id }, coupon);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error creating coupon: {ex.Message}");
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
         // Endpoint to update an existing coupon
         [HttpPut("{id}")]
