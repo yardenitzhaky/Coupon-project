@@ -3,7 +3,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
+import { Toast } from 'primereact/toast';
 import { confirmDialog } from 'primereact/confirmdialog';
+import { useRef } from 'react';
 import couponService from '../../../services/couponService';
 import CouponDialog from './CouponDialog';
 import PageTransition from '../../design/PageTransition';
@@ -13,7 +15,28 @@ const CouponList = () => {
   const [coupons, setCoupons] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const [dialogVisible, setDialogVisible] = useState(false); 
-  const [selectedCoupon, setSelectedCoupon] = useState(null); 
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const toast = useRef(null);
+
+// Functions to show messages using the Toast component
+  const showSuccess = (summary, detail) => {
+    toast.current.show({
+      severity: 'success',
+      summary: summary,
+      detail: detail,
+      life: 3000
+    });
+  };
+
+  const showError = (summary, detail) => {
+    toast.current.show({
+      severity: 'error',
+      summary: summary,
+      detail: detail,
+      life: 3000
+    });
+  };
+
 
   useEffect(() => {
     loadCoupons();
@@ -92,6 +115,15 @@ const CouponList = () => {
       header: 'Delete Confirmation',
       icon: 'pi pi-exclamation-triangle',
       accept: () => handleDelete(coupon.id),
+      reject: () => {
+        toast.current.show({
+          severity: 'info',
+          summary: 'Cancelled',
+          detail: 'Delete operation cancelled',
+          life: 2000
+        });
+      }
+
     });
   };
 
@@ -101,8 +133,10 @@ const CouponList = () => {
       await couponService.deleteCoupon(id);
       // Update local state by filtering out the deleted coupon
       setCoupons(coupons.filter(c => c.id !== id));
+      showSuccess('Success', 'Coupon deleted successfully');
     } catch (error) {
       console.error('Failed to delete coupon:', error);
+      showError('Error', 'Failed to delete coupon');
     }
   };
 
@@ -118,20 +152,24 @@ const CouponList = () => {
         // Update existing coupon
         const updated = await couponService.updateCoupon(selectedCoupon.id, couponData);
         setCoupons(coupons.map(c => c.id === updated.id ? updated : c));
+        showSuccess('Success', 'Coupon updated successfully');
       } else {
         // Create new coupon
         const created = await couponService.createCoupon(couponData);
         setCoupons([...coupons, created]);
+        showSuccess('Success', 'Coupon created successfully');
       }
       hideCouponDialog();
     } catch (error) {
       console.error('Failed to save coupon:', error);
+      showError('Error', 'Failed to save coupon');
     }
   };
 
   return (
     <PageTransition>
     <div className="card p-4 mb-16">
+      <Toast ref={toast} />
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-bold">Coupons</h2>
         <Button 
