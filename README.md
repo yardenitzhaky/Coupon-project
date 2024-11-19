@@ -110,6 +110,12 @@ npm run dev
 ```sql
 -- Create the database
 CREATE DATABASE coupon_management;
+```
+
+```sql
+
+-- Select the database
+USE coupon_management;
 
 -- Create User table
 CREATE TABLE Users (
