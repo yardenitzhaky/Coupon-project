@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-CouponGuard is a full-stack coupon management system built with React.js, #c, .NET, and MySQL.
+CouponGuard is a full-stack coupon management system built with React.js, #C, .NET, and MySQL.
 
 **[✨ Try the Live Demo](http://couponguardbucket.s3-website-us-east-1.amazonaws.com)**
 
